@@ -1,4 +1,4 @@
-import json
+import json, os
 from common.context import Service
 from common import utils
 import logging
@@ -11,12 +11,24 @@ class SettingManager(Service):
         self._read_configuration()
 
     def _read_configuration(self):
-        json_data = open('config.json')
-        self._model = json.load(json_data)
-        json_data.close()
+        if os.path.isfile('config.user.json'):
+            config_file = open('config.user.json')
+            self._model = json.load(config_file)
+            config_file.close()
+        config_file = open('config.json')
+        default_model = json.load(config_file)
+        config_file.close()
+        if self._model:
+            user_model = self._model
+            for key, value in default_model.items():
+                if not(key in user_model):
+                    user_model[key] = value
+        else:
+            self._model = default_model
 
     def setting(self, setting_id):
         answer = self._model.get(setting_id)
+        # Do not minimize this since there are false/true settings
         if answer is not None:
             return answer
         else:
