@@ -2,3 +2,4 @@
 */trash
 *.pyc
 *.log
+*.user.json
