@@ -32,9 +32,9 @@ class RestServlet(BaseHTTPRequestHandler):
                     self.send_header('Content-type', handler_response.get_content_type())
                     self.end_headers()
                     self.wfile.write(handler_response.get_content())
-        except BaseException as error:
+        except BaseException:
             log_server().exception("Exception during processing: "+self.raw_requestline)
-            raise error
+            self.send_response(500)
         return
 
     def do_POST(self):
@@ -67,9 +67,9 @@ class RestServlet(BaseHTTPRequestHandler):
                     self.send_header('Content-type', handler_response.get_content_type())
                     self.end_headers()
                     self.wfile.write(handler_response.get_content())
-        except BaseException as error:
+        except BaseException:
             log_server().exception("Exception during processing: "+self.raw_requestline)
-            raise error
+            self.send_response(500)
         return
 
     def _send_not_found(self):
