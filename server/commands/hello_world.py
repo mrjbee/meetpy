@@ -15,11 +15,11 @@ class Command (_common.CommandTemplate):
             .about("Hello World Greeting test script")\
             .text_arg(True, "name", "Your name goes here. So server will say Hello to you")
 
-    def execute(self, result, args_map, log=_common.default_logger()):
+    def execute(self, result, args_map, log):
         log.info("Hello "+args_map["name"]+" ! I`m pybee server")
         assert isinstance(result, _common.ResultDefinitionBuilder)
-        #result.message("Say Hello", "Hello "+args_map["name"]+" ! I`m pybee server")
-        #result.stop("Test stop functionality")
+        # result.message("Say Hello", "Hello "+args_map["name"]+" ! I`m pybee server")
+        result.stop("Test stop functionality")
 
     def short_execution(self):
         return True

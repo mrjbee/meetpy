@@ -1,8 +1,7 @@
-import os
-import traceback
+import os, traceback
 from common.context import Service
 from common import utils
-
+from common.utils import log_execution
 
 class CommandManger (Service):
 
@@ -14,6 +13,7 @@ class CommandManger (Service):
         self._loadCommands()
 
     def execute_command(self, command_id, arguments):
+        log_execution().info("Command execution: %s (%s)", command_id, arguments)
         command = self._command_map.get(command_id)
         command_result = utils.Object()
         command_result.is_success = True
@@ -21,6 +21,7 @@ class CommandManger (Service):
         command_result.details = None
         try:
             result = command.execute_internal(arguments)
+            log_execution().info("Command executed: %s", command_id)
             command_result.result_details = []
             for res in result.results():
                 command_result.result_details.append(res.to_map())
@@ -28,6 +29,7 @@ class CommandManger (Service):
             command_result.is_success = False
             command_result.details = error.message
             error_trace = traceback.format_exc()
+            log_execution().exception("Command execution failed: %s", command_id)
             command_result.result_details = [{"type": "message", "trace": error_trace}]
         return command_result
 

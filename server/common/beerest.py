@@ -1,54 +1,75 @@
 # -*- coding: utf-8 -*-
-import re
-import json
+import re, json, traceback
+from common.utils import log_server
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 handlers = []
 INVALID = ()
 
+
 class RestServlet(BaseHTTPRequestHandler):
 
     def do_GET(self):
-        global INVALID
-        handler = self._select_handler(self.path)
-        if handler is None:
-            self._send_bad_path()
-        else:
-            handler_response = handler.get(self.path, self.headers)
-            if handler_response is None:
-                self._send_not_found()
-            elif handler_response is INVALID:
-                self._send_bad_request()
+        try:
+            global INVALID
+            log_server().info("Request: %s", self.raw_requestline)
+            handler = self._select_handler(self.path)
+            if handler is None:
+                log_server().info("Respond: bad path [no handler]")
+                self._send_bad_path()
             else:
-                self.send_response(200)
-                # TODO! process headers
-                self.send_header('Content-type', handler_response.get_content_type())
-                self.end_headers()
-                self.wfile.write(handler_response.get_content())
+                handler_response = handler.get(self.path, self.headers)
+                if handler_response is None:
+                    self._send_not_found()
+                    log_server().info("Respond: not found")
+                elif handler_response is INVALID:
+                    self._send_bad_request()
+                    log_server().info("Respond: invalid request")
+                else:
+                    log_server().info("Respond: success")
+                    self.send_response(200)
+                    # TODO! process headers
+                    self.send_header('Content-type', handler_response.get_content_type())
+                    self.end_headers()
+                    self.wfile.write(handler_response.get_content())
+        except BaseException as error:
+            log_server().exception("Exception during processing: "+self.raw_requestline)
+            raise error
         return
 
     def do_POST(self):
-        body_size = int(self.headers['Content-Length'])
-        if body_size < 2:
-            self._send_bad_request()
-            return
-        body = self.rfile.read(body_size)
-        global INVALID
-        handler = self._select_handler(self.path)
-        if handler is None:
-            self._send_bad_path()
-        else:
-            handler_response = handler.post(self.path, self.headers,body)
-            if handler_response is None:
-                self._send_not_found()
-            elif handler_response is INVALID:
+        try:
+            log_server().info("Request: %s", self.raw_requestline)
+            body_size = int(self.headers['Content-Length'])
+            if body_size < 2:
+                log_server().info("Respond: invalid request [no body]")
                 self._send_bad_request()
+                return
+            body = self.rfile.read(body_size)
+            log_server().info("Request body: %s", body)
+            global INVALID
+            handler = self._select_handler(self.path)
+            if handler is None:
+                log_server().info("Respond: bad path [no handler]")
+                self._send_bad_path()
             else:
-                self.send_response(200)
-                # TODO! process headers
-                self.send_header('Content-type', handler_response.get_content_type())
-                self.end_headers()
-                self.wfile.write(handler_response.get_content())
+                handler_response = handler.post(self.path, self.headers, body)
+                if handler_response is None:
+                    log_server().info("Respond: not found")
+                    self._send_not_found()
+                elif handler_response is INVALID:
+                    log_server().info("Respond: invalid request")
+                    self._send_bad_request()
+                else:
+                    log_server().info("Respond: success")
+                    self.send_response(200)
+                    # TODO! process headers
+                    self.send_header('Content-type', handler_response.get_content_type())
+                    self.end_headers()
+                    self.wfile.write(handler_response.get_content())
+        except BaseException as error:
+            log_server().exception("Exception during processing: "+self.raw_requestline)
+            raise error
         return
 
     def _send_not_found(self):

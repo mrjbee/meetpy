@@ -1,19 +1,4 @@
-import logging
-
-_def_log = None
-
-
-def default_logger():
-    global _def_log
-    if _def_log is None:
-        _def_log = logging.getLogger("DEFAULT")
-        hdlr = logging.StreamHandler()
-        fmt = logging.Formatter('%(levelname)s:%(message)s')
-        hdlr.setFormatter(fmt)
-        _def_log.addHandler(hdlr)
-        _def_log.setLevel(logging.INFO)
-    return _def_log
-
+from common import utils
 
 class _ArgumentDefinitionBuilder(object):
     def __init__(self, arg_type, required, arg_id, arg_about):
@@ -135,7 +120,7 @@ class CommandTemplate(object):
         """
         pass
 
-    def execute_internal(self, args_map, log=default_logger()):
+    def execute_internal(self, args_map, log=utils.log_execution()):
         result = ResultDefinitionBuilder()
         self.execute(result, args_map, log)
         return result
