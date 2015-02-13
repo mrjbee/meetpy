@@ -1,4 +1,12 @@
 {
+  "port":9999,
+  "log_server_path":"server.log",
+  "log_execution_path":"execution.log",
+  "log_server_level":"INFO",
+  "log_execution_level":"INFO",
+  "log_console_level":"WARN",
+  "log_console_enabled": false,
+
   "places":[
     {
       "id":"home",

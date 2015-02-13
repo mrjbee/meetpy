@@ -1,7 +1,7 @@
 import json
 from common.context import Service
 from common import utils
-
+import logging
 
 class SettingManager(Service):
 
@@ -14,6 +14,21 @@ class SettingManager(Service):
         json_data = open('config.json')
         self._model = json.load(json_data)
         json_data.close()
+
+    def setting(self, setting_id):
+        answer = self._model.get(setting_id)
+        if answer is not None:
+            return answer
+        else:
+            raise ValueError("No setting with:"+setting_id)
+
+    def log_level(self, setting_id):
+        answer = self._model.get(setting_id)
+        if answer:
+            return getattr(logging, answer)
+        else:
+            raise ValueError("No setting with:"+setting_id)
+
 
     def specified_places(self):
         places = self._model["places"]

@@ -4,11 +4,12 @@ from services import settings
 from services import commands
 from features import fs, command
 
+SM = settings.SettingManager()
 
 class ServerContext(Context):
 
     def configure(self):
-        self.required_service(settings.SettingManager())
+        self.required_service(SM)
         self.required_service(commands.CommandManger())
         self.required_feature(fs.GetAvailablePlaces())
         self.required_feature(fs.ExploreFiles())

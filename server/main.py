@@ -4,15 +4,20 @@ from common import beerest
 from common.utils import log_server, log_execution
 import logging
 import transport_config
+from context_config import SM
 
 VERSION = "0.1 (beta)"
 
-PORT_NUMBER = 9999
-SERVER_LOG_PATH = "server.log"
-SERVER_LOG_LEVEL = logging.INFO
-EXECUTION_LOG_PATH = "execution.log"
-EXECUTION_LOG_LEVEL = logging.INFO
-CONSOLE_LOG_LEVEL = None  # logging.DEBUG
+PORT_NUMBER = SM.setting("port")
+SERVER_LOG_PATH = SM.setting("log_server_path")
+SERVER_LOG_LEVEL = SM.log_level("log_server_level")
+EXECUTION_LOG_PATH = SM.setting("log_execution_path")
+EXECUTION_LOG_LEVEL = SM.log_level("log_execution_level")
+CONSOLE_LOG_LEVEL = SM.log_level("log_console_level")
+CONSOLE_LOG_ENABLED = SM.setting("log_console_enabled")
+
+if CONSOLE_LOG_ENABLED is False:
+    CONSOLE_LOG_LEVEL = None
 
 # Welcome prompt
 print "MeetPy server. Version", VERSION
