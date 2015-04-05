@@ -1,3 +1,9 @@
 {
-  "port": 8888
+  "port": 8888,
+  "places":[
+    {
+      "id":"home",
+      "folder":"/home/mrjbee"
+    }
+  ]
 }

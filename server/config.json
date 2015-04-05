@@ -7,10 +7,5 @@
   "log_console_level":"WARN",
   "log_console_enabled": false,
 
-  "places":[
-    {
-      "id":"home",
-      "folder":"/home/mrjbee"
-    }
-  ]
+  "places":[]
 }
