@@ -1,11 +1,13 @@
 import _common
 
+async = True
+
 
 def define(command_definition_builder):
         assert isinstance(command_definition_builder, _common.CommandDefinitionBuilder)
         command_definition_builder\
-            .title("Greetings")\
-            .about("Hello World Greeting test script")\
+            .title("Greetings [async]")\
+            .about("Hello World Greeting test script which called in separate thread")\
             .text_arg(True, "name", "Your name goes here. So server will say Hello to you")
 
 

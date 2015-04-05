@@ -1,5 +1,5 @@
 from common.context import Feature
-from services import settings
+from services import services_settings
 from common import utils
 import os
 
@@ -31,8 +31,8 @@ class GetAvailablePlaces(Feature):
         super(GetAvailablePlaces, self).__init__(GetAvailablePlaces)
 
     def execute(self, args=None):
-        sm = self.service(settings.SettingManager)
-        assert isinstance(sm, settings.SettingManager)
+        sm = self.service(services_settings.SettingManager)
+        assert isinstance(sm, services_settings.SettingManager)
         places = sm.specified_places()
         answer_list = []
         for place in places:

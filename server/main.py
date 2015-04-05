@@ -29,7 +29,7 @@ print " == starting on a port:", PORT_NUMBER
 
 # Logging setup
 fmt = logging.Formatter('%(levelname)s:%(message)s')
-file_fmt = logging.Formatter('%(asctime)s - %(levelname)s:%(message)s')
+file_fmt = logging.Formatter('[%(threadName)s] %(asctime)s - %(levelname)s:%(message)s')
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(fmt)
 if CONSOLE_LOG_LEVEL:

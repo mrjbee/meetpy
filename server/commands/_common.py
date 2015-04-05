@@ -84,49 +84,25 @@ class StopExecutionError(RuntimeError):
         super(StopExecutionError, self).__init__(msg)
 
 
-class ResultDefinitionBuilder(object):
+class ExecutionContext(object):
 
     def __init__(self):
-        super(ResultDefinitionBuilder, self).__init__()
+        super(ExecutionContext, self).__init__()
         self._result_list = []
 
     def message(self, title, msg):
         self._result_list.append(StringResult(title, msg))
 
-    def results(self):
-        return self._result_list
-
     def stop(self, description):
         raise StopExecutionError(description)
 
+    def _result_to_json(self):
+        answer = []
+        for res in self.results():
+            answer.result_details.append(res.to_map())
+        return answer
 
-class CommandTemplate(object):
-    def __init__(self, version):
-        super(CommandTemplate, self).__init__()
-        self._version = version
 
-    def build_definition(self):
-        builder = CommandDefinitionBuilder()
-        self.define(builder)
-        return builder
-
-    def short_execution(self):
-        return False
-
-    def define(self, command_definition_builder):
-        """
-        :param command_definition_builder:CommandDefinitionBuilder
-        :return: None
-        """
-        pass
-
-    def execute_internal(self, args_map, log=utils.log_execution()):
-        result = ResultDefinitionBuilder()
-        self.execute(result, args_map, log)
-        return result
-
-    def execute(self, result, args_map, log):
-        pass
-
-    def version(self):
-        return self._version
+class AsyncExecutionContext(ExecutionContext):
+    def __init__(self):
+        super(AsyncExecutionContext, self).__init__()

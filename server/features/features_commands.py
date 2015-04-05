@@ -1,5 +1,6 @@
-from services import settings
-from services import commands
+from services import services_settings
+from services import services_commands
+from services import services_threads
 from common import utils
 from common.context import Feature
 
@@ -17,8 +18,8 @@ class GetCommandDetails(Feature):
         super(GetCommandDetails, self).__init__(GetCommandDetails)
 
     def execute(self, command_id):
-        cm = self.service(commands.CommandManger)
-        assert isinstance(cm, commands.CommandManger)
+        cm = self.service(services_commands.CommandManger)
+        assert isinstance(cm, services_commands.CommandManger)
         command_map = cm.command(command_id)
         if command_map is None:
             return None
@@ -33,8 +34,8 @@ class ListCommands(Feature):
         super(ListCommands, self).__init__(ListCommands)
 
     def execute(self, lang="en"):
-        cm = self.service(commands.CommandManger)
-        assert isinstance(cm, commands.CommandManger)
+        cm = self.service(services_commands.CommandManger)
+        assert isinstance(cm, services_commands.CommandManger)
         answer = []
         for command_map in cm.commands():
             answer.append(_command_map_to_object(command_map))
@@ -46,8 +47,8 @@ class ExecuteCommand(Feature):
         super(ExecuteCommand, self).__init__(ExecuteCommand)
 
     def execute(self, command_task):
-        cm = self.service(commands.CommandManger)
-        assert isinstance(cm, commands.CommandManger)
+        cm = self.service(services_commands.CommandManger)
+        assert isinstance(cm, services_commands.CommandManger)
         if cm.is_command_short_execution(command_task.id):
             answer_object = cm.execute_command(command_task.id, command_task.args)
             return {
@@ -56,4 +57,13 @@ class ExecuteCommand(Feature):
                 "results": answer_object.result_details
             }
         else:
-            raise ValueError("long term commands execution not implemented")
+            lazy_execution = cm.create_command_execution(command_task.id, command_task.args)
+            tm = self.service(services_threads.ThreadManager)
+            assert isinstance(tm, services_threads.ThreadManager)
+            tm.post("main", lazy_execution)
+            #TODO: add corect response here
+            return {
+                "success": True,
+                "details": "",
+                "results": [{"task_id": lazy_execution.id}]
+            }
