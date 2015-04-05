@@ -5,7 +5,8 @@
   "log_server_level":"INFO",
   "log_execution_level":"INFO",
   "log_console_level":"WARN",
-  "log_console_enabled": false,
+  "log_console_enabled": true,
 
+  "task_dir":".tasks",
   "places":[]
 }

@@ -1,3 +1,4 @@
+import json
 import os, traceback, uuid
 from common.context import Service
 from common import utils
@@ -30,13 +31,12 @@ class CommandManger (Service):
         log_execution().info("Preparing command for lazy execution: %s (%s)", command_id, arguments)
         command = self._command_map.get(command_id)
         assert isinstance(command, CommandMethods)
-        context = _common.AsyncExecutionContext()
-        lazy_execution = LazyCommandExecution(context)
-        lazy_execution.run_method = command.method_execute
-        lazy_execution.args = arguments
+
+        context = _common.AsyncExecutionContext(command_id, arguments)
+        lazy_execution = CommandExecution(context, self)
         return lazy_execution
 
-    def execute_command(self, command_id, arguments):
+    def execute_command(self, command_id, arguments, log=log_execution(), context=None):
         log_execution().info("Command execution: %s (%s)", command_id, arguments)
         command = self._command_map.get(command_id)
         assert isinstance(command, CommandMethods)
@@ -45,9 +45,10 @@ class CommandManger (Service):
         command_result.result_details = []
         command_result.details = None
         try:
-            context = _common.ExecutionContext()
+            if context is None:
+                context = _common.ExecutionContext()
             command.method_execute(context, arguments, log_execution())
-            log_execution().info("Command executed: %s", command_id)
+            log.info("Command executed: %s", command_id)
             command_result.result_details = context._result_to_json()
         except Exception as error:
             command_result.is_success = False
@@ -100,21 +101,46 @@ class CommandMethods(object):
         self.flag_async = None
 
 
-class LazyCommandExecution(services_threads.ThreadRunnable):
+class CommandExecution(services_threads.ThreadRunnable):
 
-    def __init__(self, exec_context):
-        super(LazyCommandExecution, self).__init__()
+    def __init__(self, exec_context, command_manager):
+        super(CommandExecution, self).__init__()
+        assert isinstance(exec_context, _common.AsyncExecutionContext)
+        assert isinstance(command_manager, CommandManger)
         self.context = exec_context
-        self.run_method = None
-        self.args = None
-        self.id = str(uuid.uuid4())
+        self.context.on_change_observing = self._on_context_change
+        self.manager = command_manager
+        self.persist_dir = None
+        self.status = "awaiting"
+        self.error_msg = ""
+        self.results = ""
 
     def run(self):
-        try:
-            self.run_method(self.context, self.args, log_execution(self.id))
-        except _common.StopExecutionError:
-            log_execution(self.id).info("Execution stopped")
-        except Exception as error:
-            log_execution(self.id).exception(error)
+        self.status = "running"
+        self.persist()
+        res = self.manager.execute_command(self.context.command_id,
+                                     self.context.args,
+                                     log_execution(self.context.id),
+                                     self.context)
 
+        if res.is_success:
+            self.status = "done"
+        else:
+            self.status = "error"
+            self.error_msg = res.details
+        self.results = res.result_details
+        self.persist()
 
+    def context_id(self):
+        return self.context.id
+
+    def _on_context_change(self, context):
+        self.persist()
+
+    def persist(self):
+        data = {"context": self.context._to_json_map(),
+                "status": self.status,
+                "error_msg": self.error_msg,
+                "results": self.results}
+        with open(os.path.join(self.persist_dir, self.context.id+'.task.json'), 'w') as outfile:
+            json.dump(data, outfile)

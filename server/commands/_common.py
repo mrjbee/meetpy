@@ -1,4 +1,8 @@
+import uuid
 from common import utils
+from common.utils import log_execution
+from services import services_threads
+
 
 class _ArgumentDefinitionBuilder(object):
     def __init__(self, arg_type, required, arg_id, arg_about):
@@ -89,20 +93,32 @@ class ExecutionContext(object):
     def __init__(self):
         super(ExecutionContext, self).__init__()
         self._result_list = []
+        self.on_change_observing = None
 
     def message(self, title, msg):
         self._result_list.append(StringResult(title, msg))
+        self._notify_observer()
 
     def stop(self, description):
         raise StopExecutionError(description)
 
     def _result_to_json(self):
         answer = []
-        for res in self.results():
-            answer.result_details.append(res.to_map())
+        for res in self._result_list:
+            answer.append(res.to_map())
         return answer
+
+    def _notify_observer(self):
+        if self.on_change_observing:
+            self.on_change_observing(self)
 
 
 class AsyncExecutionContext(ExecutionContext):
-    def __init__(self):
+    def __init__(self, command_id, args):
         super(AsyncExecutionContext, self).__init__()
+        self.args = args
+        self.id = str(uuid.uuid4())
+        self.command_id = command_id
+
+    def _to_json_map(self):
+        return {"args": self.args, "results": self._result_to_json()}

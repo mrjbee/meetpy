@@ -51,3 +51,9 @@ class SettingManager(Service):
             place_object.folder = place["folder"]
             answer_list.append(place_object)
         return answer_list
+
+    def task_dir(self):
+        path = self._model["task_dir"]
+        if not os.path.exists(path):
+             os.makedirs(path)
+        return path

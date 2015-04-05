@@ -29,15 +29,13 @@ class ThreadManager(Service):
         runnable_list.append(runnable)
         if thread_start_required:
 
-            thread = ExecutionThread(thread_id,
-                                     self._get_next_for,
-                                     self._on_thread_shutdown)
+            thread = _ExecutionThread(thread_id,self)
             log_execution().info("Starting tread "+thread_id)
             thread.start()
         pass
         self._threadMapLock.release()
 
-    def _get_next_for(self, thread_id):
+    def _provide_runnable(self, thread_id):
         try:
             self._threadMapLock.acquire()
             runnable_list = self._threadMap.get(thread_id, None)
@@ -45,14 +43,28 @@ class ThreadManager(Service):
                 return None
             if len(runnable_list) == 0:
                 return None
-            return runnable_list.pop(0)
+            return runnable_list[0]
         finally:
             self._threadMapLock.release()
+
+    def _remove_runnable(self, thread_id, runnable):
+        try:
+            self._threadMapLock.acquire()
+            runnable_list = self._threadMap.get(thread_id, None)
+            if runnable_list is None:
+                return None
+            if len(runnable_list) == 0:
+                return None
+            runnable_list.remove(runnable)
+        finally:
+            self._threadMapLock.release()
+        pass
 
     def _on_thread_shutdown(self, thread_id):
         self._threadMapLock.acquire()
         log_execution().info("Stopping tread "+thread_id)
         self._threadMapLock.release()
+
 
 
 class ThreadRunnable(object):
@@ -64,22 +76,23 @@ class ThreadRunnable(object):
         pass
 
 
-class ExecutionThread(Thread):
+class _ExecutionThread(Thread):
 
-    def __init__(self, thread_id, runnable_provider, thread_on_stop):
-        super(ExecutionThread, self).__init__()
+    def __init__(self, thread_id, thread_manager):
+        super(_ExecutionThread, self).__init__()
         self._thread_prog_name = thread_id
         self.setName(thread_id+"_thread")
-        self.runnable_provider = runnable_provider
-        self.thread_on_stop = thread_on_stop
+        assert isinstance(thread_manager, ThreadManager)
+        self.tm = thread_manager
 
     def run(self):
-        runnable = self.runnable_provider(self._thread_prog_name)
+        runnable = self.tm._provide_runnable(self._thread_prog_name)
         assert isinstance(runnable, ThreadRunnable)
         while runnable is not None:
             try:
                 runnable.run()
+                self.tm._remove_runnable(self._thread_prog_name, runnable)
             except Exception as error:
                 log_execution().exception(error)
-            runnable = self.runnable_provider(self._thread_prog_name)
-        self.thread_on_stop(self._thread_prog_name)
+            runnable = self.tm._provide_runnable(self._thread_prog_name)
+        self.tm._on_thread_shutdown(self._thread_prog_name)

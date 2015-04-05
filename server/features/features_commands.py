@@ -3,6 +3,7 @@ from services import services_commands
 from services import services_threads
 from common import utils
 from common.context import Feature
+from services.services_commands import CommandExecution
 
 
 def _command_map_to_object(command_map):
@@ -57,13 +58,19 @@ class ExecuteCommand(Feature):
                 "results": answer_object.result_details
             }
         else:
-            lazy_execution = cm.create_command_execution(command_task.id, command_task.args)
+            execution = cm.create_command_execution(command_task.id, command_task.args)
+            assert isinstance(execution, CommandExecution)
+            sm = self.service(services_settings.SettingManager)
+            assert isinstance(sm, services_settings.SettingManager)
+            task_dir = sm.task_dir()
+            execution.persist_dir = task_dir
+            execution.persist()
             tm = self.service(services_threads.ThreadManager)
             assert isinstance(tm, services_threads.ThreadManager)
-            tm.post("main", lazy_execution)
+            tm.post("main", execution)
             #TODO: add corect response here
             return {
                 "success": True,
                 "details": "",
-                "results": [{"task_id": lazy_execution.id}]
+                "results": [{"task_id": execution.context_id()}]
             }
