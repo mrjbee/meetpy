@@ -1,18 +1,24 @@
 import uuid
 from common import utils
 from common.utils import log_execution
-from services import services_threads
+from services import space_threads
 
 
-class _ArgumentDefinitionBuilder(object):
+def _to_json_list(list):
+    answer = []
+    for elem in list:
+        answer.append(elem.as_map())
+    return answer
+
+class _ArgumentDefinition(object):
     def __init__(self, arg_type, required, arg_id, arg_about):
-        super(_ArgumentDefinitionBuilder, self).__init__()
+        super(_ArgumentDefinition, self).__init__()
         self._required = required
         self._type = arg_type
         self._id = arg_id
         self._about = arg_about
 
-    def build_definition_map(self):
+    def as_map(self):
         definition_map = {
             "id": self._id,
             "about": self._about,
@@ -25,7 +31,7 @@ class _ArgumentDefinitionBuilder(object):
         pass
 
 
-class TextArgumentDefinition(_ArgumentDefinitionBuilder):
+class TextArgumentDefinition(_ArgumentDefinition):
     def __init__(self, required, arg_id, arg_about):
         super(TextArgumentDefinition, self).__init__("text", required, arg_id, arg_about)
         self._len = -1
@@ -38,12 +44,12 @@ class TextArgumentDefinition(_ArgumentDefinitionBuilder):
         def_map["len"] = self._len
 
 
-class CommandDefinitionBuilder(object):
+class SignatureBuilder(object):
     def __init__(self):
-        super(CommandDefinitionBuilder, self).__init__()
+        super(SignatureBuilder, self).__init__()
         self._title = "Unknown"
         self._about = "Unknown"
-        self._arg_lst = []
+        self._argument_builder = ArgumentBuilder()
 
     def title(self, value_string):
         self._title = value_string
@@ -53,10 +59,22 @@ class CommandDefinitionBuilder(object):
         self._about = value_string
         return self
 
+    def args(self):
+        return self._argument_builder
+
+    def args_as_map(self):
+        return _to_json_list(self._argument_builder._arg_lst)
+
+
+class ArgumentBuilder(object):
+    def __init__(self):
+        super(ArgumentBuilder, self).__init__()
+        self._arg_lst = []
+
     def text_arg(self, required, name, about):
-        arg_builder = TextArgumentDefinition(required, name, about)
-        self._arg_lst.append(arg_builder)
-        return arg_builder
+        arg_definition = TextArgumentDefinition(required, name, about)
+        self._arg_lst.append(arg_definition)
+        return arg_definition
 
 
 class _Result(object):
@@ -65,7 +83,7 @@ class _Result(object):
         self._type = res_type
         self._title = title
 
-    def to_map(self):
+    def as_map(self):
         answer = {"type": self._type, "title": self._title}
         self.fill_result(answer)
         return answer
@@ -93,32 +111,61 @@ class ExecutionContext(object):
     def __init__(self):
         super(ExecutionContext, self).__init__()
         self._result_list = []
-        self.on_change_observing = None
+
+    def _result(self, result):
+        self._result_list.append(result)
 
     def message(self, title, msg):
-        self._result_list.append(StringResult(title, msg))
-        self._notify_observer()
+        self._result(StringResult(title, msg))
 
     def stop(self, description):
         raise StopExecutionError(description)
 
-    def _result_to_json(self):
-        answer = []
-        for res in self._result_list:
-            answer.append(res.to_map())
-        return answer
-
-    def _notify_observer(self):
-        if self.on_change_observing:
-            self.on_change_observing(self)
+    def result_as_map(self):
+        return _to_json_list(self._result_list)
 
 
-class AsyncExecutionContext(ExecutionContext):
-    def __init__(self, command_id, args):
-        super(AsyncExecutionContext, self).__init__()
-        self.args = args
+class CommandExecutionContext(ExecutionContext):
+
+    def __init__(self):
+        super(CommandExecutionContext, self).__init__()
+        self._arg_builder = None
+        self._tasks = []
+
+    def request_arguments(self):
+        self._arg_builder = ArgumentBuilder()
+        return self._arg_builder
+
+    def sub_task(self, task):
+        assert isinstance(task, Task)
+        self._tasks.append(task)
+
+
+class TaskExecutionContext(ExecutionContext):
+
+    def __init__(self):
+        super(TaskExecutionContext, self).__init__()
+        self._progress = 0.0
+        self._observe_method = None
+
+    def _notify_changes(self):
+        if self._observe_method:
+            self._observe_method(self)
+
+    def progress(self, value):
+        self._progress = value
+        self._notify_changes()
+
+    def _result(self, result):
+        super(TaskExecutionContext, self)._result(result)
+        self._notify_changes()
+
+
+class Task(object):
+
+    def __init__(self):
+        super(Task, self).__init__()
         self.id = str(uuid.uuid4())
-        self.command_id = command_id
 
-    def _to_json_map(self):
-        return {"args": self.args, "results": self._result_to_json()}
+    def execute(self, task_context, log):
+        pass

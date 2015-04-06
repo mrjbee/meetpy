@@ -1,8 +1,8 @@
 from common.beerest import ActionHandler, HandlerResponse, INVALID
 import context_config
 from common.context import RequestExecutor
-from features import features_fs
-from features.features_commands import ListCommands, GetCommandDetails, ExecuteCommand
+from uc import user_cases_fs
+from uc.user_cases_commands import ListCommands, GetCommandDetails, ExecuteCommand
 from common import utils
 
 executor = context_config.request_executor()
@@ -21,7 +21,7 @@ class Places(ActionHandler):
     def do_get(self, id_map, header_map):
         global executor
         assert isinstance(executor, RequestExecutor)
-        places = executor.execute(features_fs.GetAvailablePlaces)
+        places = executor.execute(user_cases_fs.GetAvailablePlaces)
         respond_json = []
         for place in places:
             place_map = {"name": place.name, "folder": place.folder}
@@ -38,7 +38,7 @@ class Files(ActionHandler):
         if parent_path is None:
             return INVALID
         assert isinstance(executor, RequestExecutor)
-        sub_files = executor.execute(features_fs.ExploreFiles, parent_path)
+        sub_files = executor.execute(user_cases_fs.ExploreFiles, parent_path)
         if sub_files is None:
             return None
         respond_json = []

@@ -4,3 +4,4 @@
 *.log
 *.user.json
 .tasks/
+*.vpp~*

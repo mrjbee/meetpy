@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 from common.context import Context, RequestExecutor
-from services import services_settings
-from services import services_commands
-from services import services_threads
-from features import features_fs, features_commands
+from services import space_settings
+from services import space_commands
+from services import space_threads
+from uc import user_cases_fs, user_cases_commands
 
-SM = services_settings.SettingManager()
+SM = space_settings.SettingManager()
 
 class ServerContext(Context):
 
     def configure(self):
         self.required_service(SM)
-        self.required_service(services_threads.ThreadManager())
-        self.required_service(services_commands.CommandManger())
-        self.required_feature(features_fs.GetAvailablePlaces())
-        self.required_feature(features_fs.ExploreFiles())
-        self.required_feature(features_commands.ListCommands())
-        self.required_feature(features_commands.GetCommandDetails())
-        self.required_feature(features_commands.ExecuteCommand())
+        self.required_service(space_threads.ThreadManager())
+        self.required_service(space_commands.CommandManger())
+        self.required_feature(user_cases_fs.GetAvailablePlaces())
+        self.required_feature(user_cases_fs.ExploreFiles())
+        self.required_feature(user_cases_commands.ListCommands())
+        self.required_feature(user_cases_commands.GetCommandDetails())
+        self.required_feature(user_cases_commands.ExecuteCommand())
 
 
 _context = None
@@ -42,5 +42,5 @@ def request_executor():
 
 
 if __name__ == '__main__':
-    cm = context().get_service(features_commands.CommandManger)
-    assert isinstance(cm, features_commands.CommandManger)
+    cm = context().get_service(user_cases_commands.CommandManger)
+    assert isinstance(cm, user_cases_commands.CommandManger)
