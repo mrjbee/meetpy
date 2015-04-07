@@ -10,6 +10,7 @@ def _to_json_list(list):
         answer.append(elem.as_map())
     return answer
 
+
 class _ArgumentDefinition(object):
     def __init__(self, arg_type, required, arg_id, arg_about):
         super(_ArgumentDefinition, self).__init__()
@@ -78,13 +79,12 @@ class ArgumentBuilder(object):
 
 
 class _Result(object):
-    def __init__(self, res_type, title):
+    def __init__(self, res_type):
         super(_Result, self).__init__()
         self._type = res_type
-        self._title = title
 
     def as_map(self):
-        answer = {"type": self._type, "title": self._title}
+        answer = {"type": self._type}
         self.fill_result(answer)
         return answer
 
@@ -92,12 +92,15 @@ class _Result(object):
         pass
 
 
-class StringResult(_Result):
+class MessageResult(_Result):
+
     def __init__(self, title, value):
-        super(StringResult, self).__init__("message", title)
+        super(MessageResult, self).__init__("message")
         self._value = value
+        self._title = title
 
     def fill_result(self, result_map):
+        result_map["title"] = self._title
         result_map["value"] = self._value
 
 
@@ -116,7 +119,7 @@ class ExecutionContext(object):
         self._result_list.append(result)
 
     def message(self, title, msg):
-        self._result(StringResult(title, msg))
+        self._result(MessageResult(title, msg))
 
     def stop(self, description):
         raise StopExecutionError(description)
@@ -166,6 +169,12 @@ class Task(object):
     def __init__(self):
         super(Task, self).__init__()
         self.id = str(uuid.uuid4())
+
+    def title(self):
+        return "Simple task"
+
+    def description(self):
+        return ""
 
     def execute(self, task_context, log):
         pass

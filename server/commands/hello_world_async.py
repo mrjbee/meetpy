@@ -25,6 +25,10 @@ class SayHelloTask (_common.Task):
         super(SayHelloTask, self).__init__()
         self._name = to_name
 
+
+    def title(self):
+        return "Hello To ["+self._name+"]"
+
     def execute(self, context, log):
         log.info("Hello "+self._name+" ! I`m pybee server")
         assert isinstance(context, _common.TaskExecutionContext)

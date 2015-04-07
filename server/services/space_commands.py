@@ -145,6 +145,8 @@ class CommandTaskExecution(space_threads.ThreadRunnable):
 
     def persist(self):
         data = {"id": self._task.id,
+                "title": self._task.title(),
+                "description": self._task.description(),
                 "results": self._context.result_as_map(),
                 "status": self._status,
                 "progress": self._context._progress,
