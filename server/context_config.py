@@ -17,6 +17,8 @@ class ServerContext(Context):
         self.required_feature(user_cases_fs.ExploreFiles())
         self.required_feature(user_cases_commands.ListCommands())
         self.required_feature(user_cases_commands.GetCommandDetails())
+        self.required_feature(user_cases_commands.GetTaskDetails())
+        self.required_feature(user_cases_commands.GetTasksList())
         self.required_feature(user_cases_commands.ExecuteCommand())
 
 

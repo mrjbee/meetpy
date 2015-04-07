@@ -76,6 +76,14 @@ class CommandManger (Service):
                 instance.method_execute = getattr(module, 'execute')
                 self._command_map[name] = instance
 
+    def load_task_details(self, task_folder, task_id):
+        file_path = os.path.join(task_folder, task_id+'.task.json')
+        if os.path.exists(file_path) is False:
+            return None
+        with open(file_path, 'r') as in_file:
+            data = json.load(in_file)
+        return data
+
 
 class CommandExecutionResult(object):
 

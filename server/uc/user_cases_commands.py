@@ -1,3 +1,4 @@
+import os
 from services import space_settings
 from services import space_commands
 from services import space_threads
@@ -53,10 +54,10 @@ class ExecuteCommand(Feature):
 
         answer_object = cm.execute_command(task_request.id, task_request.args)
         sm = self.service(space_settings.SettingManager)
+        assert isinstance(sm, space_settings.SettingManager)
         tm = self.service(space_threads.ThreadManager)
 
         assert isinstance(answer_object, CommandExecutionResult)
-        assert isinstance(sm, space_settings.SettingManager)
         assert isinstance(tm, space_threads.ThreadManager)
 
         sub_tasks = []
@@ -72,3 +73,38 @@ class ExecuteCommand(Feature):
             "results": answer_object.results,
             "sub_tasks": sub_tasks
         }
+
+
+class GetTasksList(Feature):
+
+    def __init__(self):
+        super(GetTasksList, self).__init__(GetTasksList)
+
+    def execute(self, args=None):
+
+        sm = self.service(space_settings.SettingManager)
+        assert isinstance(sm, space_settings.SettingManager)
+
+        file_list = os.listdir(sm.task_dir())
+        result = []
+        for file in file_list:
+            if file.endswith(".task.json"):
+                result.append(file[0:-10])
+        return result
+
+
+class GetTaskDetails(Feature):
+
+    def __init__(self):
+        super(GetTaskDetails, self).__init__(GetTaskDetails)
+
+    def execute(self, task_id=None):
+        sm = self.service(space_settings.SettingManager)
+        assert isinstance(sm, space_settings.SettingManager)
+
+        cm = self.service(space_commands.CommandManger)
+        assert isinstance(cm, space_commands.CommandManger)
+        task_details = cm.load_task_details(sm.task_dir(), task_id)
+        if task_details is None:
+            return None
+        return task_details

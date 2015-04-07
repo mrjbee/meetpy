@@ -2,7 +2,7 @@ from common.beerest import ActionHandler, HandlerResponse, INVALID
 import context_config
 from common.context import RequestExecutor
 from uc import user_cases_fs
-from uc.user_cases_commands import ListCommands, GetCommandDetails, ExecuteCommand
+from uc.user_cases_commands import ListCommands, GetCommandDetails, ExecuteCommand, GetTaskDetails, GetTasksList
 from common import utils
 
 executor = context_config.request_executor()
@@ -84,6 +84,16 @@ class CommandDetails(ActionHandler):
 
 class CreateCommandTask(ActionHandler):
 
+    def do_get(self, id_map, header_map):
+        global executor
+        assert isinstance(executor, RequestExecutor)
+        task_details = executor.execute(GetTasksList)
+        if task_details is None:
+            return None
+        response = HandlerResponse()
+        response.write_json(task_details)
+        return response
+
     def do_post(self, id_map, header_map, body):
 
         command_task = utils.Object()
@@ -96,4 +106,16 @@ class CreateCommandTask(ActionHandler):
 
         response = HandlerResponse()
         response.write_json(result)
+        return response
+
+
+class TaskDetails(ActionHandler):
+    def do_get(self, id_map, header_map):
+        global executor
+        assert isinstance(executor, RequestExecutor)
+        task_details = executor.execute(GetTaskDetails, id_map["task_id"])
+        if task_details is None:
+            return None
+        response = HandlerResponse()
+        response.write_json(task_details)
         return response

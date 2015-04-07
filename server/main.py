@@ -59,7 +59,8 @@ beerest.handlers = [
     transport_config.Files("/files"),
     transport_config.Commands("/commands"),
     transport_config.CommandDetails("/command/<command_id>"),
-    transport_config.CreateCommandTask("/tasks")
+    transport_config.CreateCommandTask("/tasks"),
+    transport_config.TaskDetails("/task/<task_id>")
 ]
 
 server = HTTPServer(('', PORT_NUMBER), beerest.RestServlet)
