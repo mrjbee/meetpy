@@ -1,0 +1,3 @@
+[submodule "client/beebox"]
+	path = client/beebox
+	url = https://github.com/mrjbee/beebox.git
