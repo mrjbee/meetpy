@@ -8,4 +8,5 @@ public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
     protected ModelMeetPy createModel() {
         return new ModelMeetPy(getApplicationContext());
     }
+
 }

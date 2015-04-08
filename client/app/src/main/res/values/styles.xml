@@ -2,7 +2,33 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+        <!--In order to debug which field get no style -->
+        <item name="android:textColor">#ffff3c2f</item>
+    </style>
+
+    <style name="Panel.Main" parent="AppTheme">
+        <item name="android:background">#ffededed</item>
+    </style>
+
+    <style name="Text.Panel.Main" parent="AppTheme">
+        <item name="android:textColor">#ff373737</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowColor">#FFFFFFFF</item>
+    </style>
+
+    <style name="Text.Caption.Panel.Main" parent="Text.Panel.Main">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Text.Optional.Panel.Main" parent="Text.Panel.Main">
+        <item name="android:textColor">#ff646464</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">0</item>
     </style>
 
 </resources>
