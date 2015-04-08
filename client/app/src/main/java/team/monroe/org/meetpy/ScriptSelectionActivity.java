@@ -1,10 +1,12 @@
 package team.monroe.org.meetpy;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.monroe.team.android.box.app.ActivitySupport;
 import org.monroe.team.android.box.app.ui.GenericListViewAdapter;
@@ -77,4 +79,15 @@ public class ScriptSelectionActivity extends ActivitySupport<AppMeetPy> {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_NEW_SERVER && data != null){
+            updateAndSelectServerById(data.getStringExtra("server_id"));
+        }
+    }
+
+    private void updateAndSelectServerById(String serverId) {
+        Toast.makeText(this,"Created server id = "+serverId, Toast.LENGTH_LONG).show();
+    }
 }

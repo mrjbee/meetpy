@@ -50,8 +50,8 @@
             style="@style/Text.Panel.Main"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editText"
-            android:hint="Server Alias"
+            android:id="@+id/sc_alias_value"
+            android:hint="Server name"
             android:singleLine="true"
             android:maxLines="1"/>
 
@@ -59,8 +59,8 @@
             style="@style/Text.Panel.Main"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editText2"
-            android:hint="192.168.0.6:7787"
+            android:id="@+id/sc_url_value"
+            android:hint="Server url, example 192.168.0.6:7787"
             android:imeOptions="actionDone"
             android:singleLine="true"
             android:maxLines="1"
