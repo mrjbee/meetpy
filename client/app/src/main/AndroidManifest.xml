@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="team.monroe.org.meetpy" >
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".AppMeetPy"
         android:allowBackup="true"
@@ -11,7 +13,7 @@
         <activity
             android:name=".ScriptSelectionActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +24,11 @@
             android:name=".ServerConfigurationActivity"
             android:label="@string/title_activity_server_configuration"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize" >
+        </activity>
+        <activity
+            android:name=".ScriptExecutionActivity"
+            android:label="@string/title_activity_script_execution" >
         </activity>
     </application>
 

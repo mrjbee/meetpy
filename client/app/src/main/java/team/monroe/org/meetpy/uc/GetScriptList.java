@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import team.monroe.org.meetpy.Representations;
 import team.monroe.org.meetpy.services.ServerConfigurationProvider;
 import team.monroe.org.meetpy.uc.entities.Script;
 import team.monroe.org.meetpy.uc.entities.ServerConfiguration;
@@ -24,8 +23,8 @@ public class GetScriptList extends UserCaseSupport<String, List<Script>> {
     }
 
     @Override
-    protected List<Script> executeImpl(String request) {
-        ServerConfiguration serverConfiguration = using(ServerConfigurationProvider.class).get(request);
+    protected List<Script> executeImpl(String serverId) {
+        ServerConfiguration serverConfiguration = using(ServerConfigurationProvider.class).get(serverId);
         if (serverConfiguration == null){
             return Collections.EMPTY_LIST;
         }
@@ -35,7 +34,7 @@ public class GetScriptList extends UserCaseSupport<String, List<Script>> {
             for (int position = 0; response.body.asArray().exists(position); position++){
                Json.JsonObject object = response.body.asArray().asObject(position);
                answer.add(new Script(
-                       object.asString("id"),
+                       serverId, object.asString("id"),
                        object.asString("title"),
                        object.asString("about")
                ));
@@ -45,8 +44,8 @@ public class GetScriptList extends UserCaseSupport<String, List<Script>> {
             throw new IllegalStateException(e);
         } catch (HttpManager.NoRouteToHostException e) {
             throw new FailExecutionException(e,100);
-        } catch (HttpManager.InvalidBodyFormat invalidBodyFormat) {
-            throw new IllegalStateException(invalidBodyFormat);
+        } catch (HttpManager.InvalidBodyFormatException invalidBodyFormatException) {
+            throw new IllegalStateException(invalidBodyFormatException);
         } catch (IOException e) {
             throw new FailExecutionException(e,101);
         }

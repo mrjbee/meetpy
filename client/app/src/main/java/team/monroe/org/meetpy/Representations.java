@@ -33,13 +33,18 @@ final public class Representations {
     public static class Script implements Serializable {
 
         public final String id;
+        public final String serverId;
         public final String scriptTitle;
         public final String scriptDescription;
 
-        public Script(String id, String scriptTitle, String scriptDescription) {
+        public Script(String id, String serverId, String scriptTitle, String scriptDescription) {
             this.id = id;
+            this.serverId = serverId;
             this.scriptTitle = scriptTitle;
             this.scriptDescription = scriptDescription;
         }
     }
+
+
+
 }

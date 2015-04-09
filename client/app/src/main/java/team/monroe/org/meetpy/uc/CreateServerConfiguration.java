@@ -34,7 +34,7 @@ public class CreateServerConfiguration extends UserCaseSupport<CreateServerConfi
             throw new FailExecutionException(e,102);
         } catch (IOException e) {
             throw new FailExecutionException(e,103);
-        } catch (HttpManager.InvalidBodyFormat e) {
+        } catch (HttpManager.InvalidBodyFormatException e) {
             throw new FailExecutionException(e,104);
         }
     }

@@ -25,8 +25,8 @@ public class ScriptSelectionActivity extends ActivitySupport<AppMeetPy> {
     private final static Representations.Server SERVER_NO_SELECTED = new Representations.Server("no_server","No server","Please select or create new one");
     private final static Representations.Server SERVER_CREATE_NEW = new Representations.Server("new_server","New server","Create new configuration ...");
 
-    private final static Representations.Script SCRIPT_SERVER_NOT_SELECTED = new Representations.Script("no_server","Server not selected","Please select server first");
-    private final static Representations.Script SCRIPT_SERVER_FETCHING = new Representations.Script("fetching","Loading script list","Please wait while loading script list");
+    private final static Representations.Script SCRIPT_SERVER_NOT_SELECTED = new Representations.Script("no_server", "no_server", "Server not selected","Please select server first");
+    private final static Representations.Script SCRIPT_SERVER_FETCHING = new Representations.Script("fetching", "fetching", "Loading script list","Please wait while loading script list");
 
     private GenericListViewAdapter<Representations.Server,GetViewImplementation.ViewHolder<Representations.Server>> serverListAdapter;
     private GenericListViewAdapter<Representations.Script,GetViewImplementation.ViewHolder<Representations.Script>> scriptListAdapter;
@@ -72,7 +72,9 @@ public class ScriptSelectionActivity extends ActivitySupport<AppMeetPy> {
     }
 
     private void requestScriptForm(Representations.Script script) {
-        Toast.makeText(this, "Request execution of script = "+script.scriptTitle, Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, ScriptExecutionActivity.class);
+        intent.putExtra("script",script);
+        startActivity(intent);
     }
 
     private void initServerConfigurationSpinner() {
