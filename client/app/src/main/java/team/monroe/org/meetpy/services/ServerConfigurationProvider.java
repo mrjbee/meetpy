@@ -1,9 +1,11 @@
-package team.monroe.org.meetpy.uc.services;
+package team.monroe.org.meetpy.services;
 
 import android.content.Context;
 
 import org.monroe.team.android.box.utils.SerializationMap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import team.monroe.org.meetpy.uc.entities.ServerConfiguration;
@@ -27,4 +29,11 @@ public class ServerConfigurationProvider {
     }
 
 
+    public List<ServerConfiguration> getAll() {
+        return new ArrayList<>(storage.values());
+    }
+
+    public ServerConfiguration get(String serverId) {
+        return storage.get(serverId);
+    }
 }

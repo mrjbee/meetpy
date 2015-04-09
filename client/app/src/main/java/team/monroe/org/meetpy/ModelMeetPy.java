@@ -5,7 +5,7 @@ import android.content.Context;
 import org.monroe.team.android.box.app.AndroidModel;
 import org.monroe.team.corebox.services.ServiceRegistry;
 
-import team.monroe.org.meetpy.uc.services.ServerConfigurationProvider;
+import team.monroe.org.meetpy.services.ServerConfigurationProvider;
 
 public class ModelMeetPy extends AndroidModel{
 

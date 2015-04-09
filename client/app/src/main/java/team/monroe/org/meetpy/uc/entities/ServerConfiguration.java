@@ -13,4 +13,8 @@ public class ServerConfiguration implements Serializable {
         this.alias = alias;
         this.url = url;
     }
+
+    public String buildUrl(String uri) {
+        return url+uri;
+    }
 }
