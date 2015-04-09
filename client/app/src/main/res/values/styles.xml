@@ -19,6 +19,18 @@
         <item name="android:shadowColor">#FFFFFFFF</item>
     </style>
 
+    <style name="Button.Link.Main" parent="Text.Panel.Main">
+        <item name="android:textColor">#ff0076d9</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Button.Link.Small.Main" parent="Button.Link.Main">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:minHeight">30dp</item>
+    </style>
+
     <style name="Text.Caption.Panel.Main" parent="Text.Panel.Main">
         <item name="android:textSize">16sp</item>
     </style>

@@ -28,7 +28,8 @@
         </activity>
         <activity
             android:name=".ScriptExecutionActivity"
-            android:label="@string/title_activity_script_execution" >
+            android:label="@string/title_activity_script_execution"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

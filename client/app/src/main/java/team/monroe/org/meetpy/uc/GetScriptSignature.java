@@ -14,9 +14,9 @@ import team.monroe.org.meetpy.uc.entities.ScriptArgument;
 import team.monroe.org.meetpy.uc.entities.ScriptIdentifier;
 import team.monroe.org.meetpy.uc.entities.ServerConfiguration;
 
-public class GetScriptInitialArgList extends UserCaseSupport<ScriptIdentifier, List<ScriptArgument>> {
+public class GetScriptSignature extends UserCaseSupport<ScriptIdentifier, List<ScriptArgument>> {
 
-    public GetScriptInitialArgList(ServiceRegistry serviceRegistry) {
+    public GetScriptSignature(ServiceRegistry serviceRegistry) {
         super(serviceRegistry);
     }
 
@@ -49,19 +49,25 @@ public class GetScriptInitialArgList extends UserCaseSupport<ScriptIdentifier, L
 
     private ScriptArgument parseArgument(Json.JsonObject argumentJson) {
         String argId = argumentJson.asString("id");
-        String argType = argumentJson.asString("type");
+        ScriptArgument.Type argType = ScriptArgument.Type.unknown;
+        try {
+            argType = ScriptArgument.Type.valueOf(argumentJson.asString("type"));
+        }catch (IllegalArgumentException e){}
+
         String argTitle = argumentJson.value("title", "No name");
         String argAbout = argumentJson.value("about", null);
         boolean argRequired = argumentJson.value("required", Boolean.class);
-        if ("text".equals(argType)){
-            return new ScriptArgument.TextArgument(
-                    argId,argType,argTitle,argAbout,argRequired,
-                    argumentJson.asString("example")
-            );
+        switch (argType){
+            case text:
+                return new ScriptArgument.TextArgument(
+                        argId,argType,argTitle,argAbout,argRequired,
+                        argumentJson.asString("example")
+                );
+            default:
+                return new ScriptArgument.UnknownTypeArgument(
+                        argId,argType,argTitle,argAbout,argRequired
+                );
         }
-        return new ScriptArgument.UnknownTypeArgument(
-                argId,argType,argTitle,argAbout,argRequired
-        );
     }
 
 }

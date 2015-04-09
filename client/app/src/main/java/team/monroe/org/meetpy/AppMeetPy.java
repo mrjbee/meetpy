@@ -1,7 +1,6 @@
 package team.monroe.org.meetpy;
 import org.monroe.team.android.box.app.ApplicationSupport;
 import org.monroe.team.android.box.data.DataProvider;
-import org.monroe.team.corebox.app.Model;
 import org.monroe.team.corebox.utils.Closure;
 import org.monroe.team.corebox.utils.Lists;
 
@@ -9,13 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import team.monroe.org.meetpy.uc.CreateServerConfiguration;
-import team.monroe.org.meetpy.uc.GetScriptInitialArgList;
+import team.monroe.org.meetpy.uc.GetScriptSignature;
 import team.monroe.org.meetpy.uc.GetScriptList;
 import team.monroe.org.meetpy.uc.entities.Script;
 import team.monroe.org.meetpy.uc.entities.ScriptArgument;
 import team.monroe.org.meetpy.uc.entities.ScriptIdentifier;
 import team.monroe.org.meetpy.uc.entities.ServerConfiguration;
 import team.monroe.org.meetpy.services.ServerConfigurationProvider;
+import team.monroe.org.meetpy.ui.ArgumentFormComponent;
 
 import static team.monroe.org.meetpy.Representations.Server;
 
@@ -65,14 +65,13 @@ public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
         },observer);
     }
 
-    public void getScriptArguments(Representations.Script script) {
-        model().execute(GetScriptInitialArgList.class,new ScriptIdentifier(script.serverId,script.id),new Model.BackgroundResultCallback<List<ScriptArgument>>() {
+    public void getScriptSignature(Representations.Script script, ValueObserver<ArgumentFormComponent> observer) {
+        fetchValue(GetScriptSignature.class,new ScriptIdentifier(script.serverId,script.id), new ValueAdapter<List<ScriptArgument>, ArgumentFormComponent>() {
             @Override
-            public void onResult(List<ScriptArgument> response) {
-                System.out.println(response);
-                System.out.println(response);
+            public ArgumentFormComponent adapt(List<ScriptArgument> arguments) {
+                return ArgumentFormComponent.createFor(arguments);
             }
-        });
+        }, observer);
     }
 
     public DataProvider<ArrayList> data_serverConfigurations() {
