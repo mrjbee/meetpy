@@ -34,6 +34,8 @@ public abstract class ArgumentComponent<ArgumentType extends ScriptArgument> {
         return arg.id;
     }
 
+    public abstract void userInput(boolean enabled);
+
 
     public static class Text extends ArgumentComponent<ScriptArgument.TextArgument> {
 
@@ -66,6 +68,11 @@ public abstract class ArgumentComponent<ArgumentType extends ScriptArgument> {
                 throw generateValueNotSetException();
             return valueEdit.getText().toString();
         }
+
+        @Override
+        public void userInput(boolean enabled) {
+            valueEdit.setEnabled(enabled);
+        }
     }
 
     public static class Unknown extends ArgumentComponent<ScriptArgument.UnknownTypeArgument> {
@@ -90,6 +97,9 @@ public abstract class ArgumentComponent<ArgumentType extends ScriptArgument> {
             if (arg.required) throw generateValueNotSetException();
             return null;
         }
+
+        @Override
+        public void userInput(boolean enabled) {}
 
     }
 

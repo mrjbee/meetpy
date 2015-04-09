@@ -48,7 +48,8 @@ public class ScriptExecutionActivity extends ActivitySupport<AppMeetPy> {
         argumentFormComponent.setSubmitListener(new ArgumentFormComponent.SubmitListener(){
             @Override
             public void onValues(Map<String, Object> data) {
-                argumentFormComponent.setProgress(true);
+                argumentFormComponent.progress(true);
+                argumentFormComponent.userInput(false);
             }
 
             @Override

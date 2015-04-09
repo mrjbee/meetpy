@@ -157,7 +157,7 @@ public class ArgumentFormComponent {
         });
     }
 
-    public void setProgress(boolean progress) {
+    public void progress(boolean progress) {
         if (progress == true) {
             submitButtonAC.hideAndCustomize(new AppearanceController.AnimatorCustomization() {
                 @Override
@@ -183,6 +183,16 @@ public class ArgumentFormComponent {
                 }
             });
         }
+    }
+
+    public void userInput(final boolean enabled) {
+        Lists.each(argumentComponentList, new Closure<ArgumentComponent, Void>() {
+            @Override
+            public Void execute(ArgumentComponent arg) {
+                arg.userInput(enabled);
+                return null;
+            }
+        });
     }
 
     public static interface SubmitListener {
