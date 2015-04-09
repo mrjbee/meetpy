@@ -1,20 +1,25 @@
 package team.monroe.org.meetpy;
 import org.monroe.team.android.box.app.ApplicationSupport;
 import org.monroe.team.android.box.data.DataProvider;
+import org.monroe.team.corebox.app.Model;
 import org.monroe.team.corebox.utils.Closure;
 import org.monroe.team.corebox.utils.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import team.monroe.org.meetpy.uc.CreateServerConfiguration;
+import team.monroe.org.meetpy.uc.ExecuteScript;
 import team.monroe.org.meetpy.uc.GetScriptSignature;
 import team.monroe.org.meetpy.uc.GetScriptList;
 import team.monroe.org.meetpy.uc.entities.Script;
+import team.monroe.org.meetpy.uc.entities.ScriptAnswer;
 import team.monroe.org.meetpy.uc.entities.ScriptArgument;
 import team.monroe.org.meetpy.uc.entities.ScriptIdentifier;
 import team.monroe.org.meetpy.uc.entities.ServerConfiguration;
 import team.monroe.org.meetpy.services.ServerConfigurationProvider;
+import team.monroe.org.meetpy.ui.AnswerFormComponent;
 import team.monroe.org.meetpy.ui.ArgumentFormComponent;
 
 import static team.monroe.org.meetpy.Representations.Server;
@@ -78,4 +83,13 @@ public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
         return serverConfigurationDataProvider;
     }
 
+    public void executeScript(Representations.Script script, Map<String, Object> data, ValueObserver<AnswerFormComponent> observer) {
+        fetchValue(ExecuteScript.class,
+                new ExecuteScript.ExecutionRequest(new ScriptIdentifier(script.serverId, script.id), data), new ValueAdapter<ScriptAnswer, AnswerFormComponent>() {
+                    @Override
+                    public AnswerFormComponent adapt(ScriptAnswer value) {
+                        return new AnswerFormComponent(value);
+                    }
+                }, observer);
+    }
 }

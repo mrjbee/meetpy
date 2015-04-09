@@ -29,7 +29,7 @@ public class GetScriptList extends UserCaseSupport<String, List<Script>> {
             return Collections.EMPTY_LIST;
         }
         try {
-            HttpManager.Response<Json> response = using(HttpManager.class).get(serverConfiguration.buildUrl("/commands"), HttpManager.details(), HttpManager.json());
+            HttpManager.Response<Json> response = using(HttpManager.class).get(serverConfiguration.buildUrl("/commands"), HttpManager.details(), HttpManager.response_json());
             List<Script> answer =new ArrayList<>();
             for (int position = 0; response.body.asArray().exists(position); position++){
                Json.JsonObject object = response.body.asArray().asObject(position);

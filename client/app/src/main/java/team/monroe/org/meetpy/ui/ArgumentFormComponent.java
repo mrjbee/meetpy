@@ -31,12 +31,10 @@ import static org.monroe.team.android.box.app.ui.animation.apperrance.Appearance
 
 public class ArgumentFormComponent {
 
-    private static final int KEY_TAG_COMPONENT_ID = 1;
-
     private final List<ArgumentComponent> argumentComponentList = new ArrayList<>();
+    private ViewGroup childContainerView;
     private SubmitListener submitListener;
     private Button submitButton;
-    private ViewGroup childContainerView;
     private ProgressBar progressBar;
     private AppearanceController submitButtonAC;
     private AppearanceController progressBarAC;
@@ -158,7 +156,8 @@ public class ArgumentFormComponent {
     }
 
     public void progress(boolean progress) {
-        if (progress == true) {
+        if (progress) {
+            progressBarAC.hideWithoutAnimation();
             submitButtonAC.hideAndCustomize(new AppearanceController.AnimatorCustomization() {
                 @Override
                 public void customize(Animator animator) {
@@ -171,6 +170,7 @@ public class ArgumentFormComponent {
                 }
             });
         } else {
+            submitButtonAC.hideWithoutAnimation();
             progressBarAC.hideAndCustomize(new AppearanceController.AnimatorCustomization() {
                 @Override
                 public void customize(Animator animator) {

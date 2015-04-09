@@ -30,7 +30,7 @@ public class GetScriptSignature extends UserCaseSupport<ScriptIdentifier, List<S
             HttpManager.Response<Json> jsonResponse = using(HttpManager.class).get(
                     serverConfiguration.buildUrl("/command/" + request.scriptId),
                     HttpManager.details(),
-                    HttpManager.json());
+                    HttpManager.response_json());
             List<ScriptArgument> argumentList = new ArrayList<>();
 
             for (int position = 0; jsonResponse.body.asObject().asArray("args").exists(position); position++){

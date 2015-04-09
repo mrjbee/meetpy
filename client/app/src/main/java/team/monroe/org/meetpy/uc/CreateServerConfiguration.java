@@ -22,7 +22,7 @@ public class CreateServerConfiguration extends UserCaseSupport<CreateServerConfi
         try {
             HttpManager.Response<Json> jsonResponse = using(HttpManager.class).get(url,
                     HttpManager.details(),
-                    HttpManager.json());
+                    HttpManager.response_json());
 
             String version = jsonResponse.body.asObject().value("version", String.class);
 

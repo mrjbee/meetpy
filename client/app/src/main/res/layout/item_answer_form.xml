@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/panel_round_whitest_2"
+    android:layout_margin="10dp"
+    android:padding="10dp">
+
+
+    <TextView
+        style="@style/Text.Optional.Panel.Main"
+        android:paddingLeft="5dp"
+        android:id="@+id/form_status_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:text="Success"
+        android:layout_alignParentRight="true"/>
+
+    <TextView
+        style="@style/Text.Optional.Panel.Main"
+        android:layout_toLeftOf="@+id/form_status_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status"/>
+
+    <LinearLayout
+        android:layout_below="@+id/form_status_value"
+        android:id="@+id/form_child_content_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+</RelativeLayout>
