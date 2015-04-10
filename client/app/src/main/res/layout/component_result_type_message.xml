@@ -3,11 +3,11 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
     >
 
     <TextView
         style="@style/Text.Panel.Main"
-        android:paddingLeft="10dp"
         android:id="@+id/component_title_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,6 @@
 
     <TextView
         style="@style/Text.Optional.Panel.Main"
-        android:paddingLeft="10dp"
         android:id="@+id/component_value_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -7,9 +7,11 @@ public class ScriptAnswer {
 
     public final boolean success;
     public final List<Result> resultList;
+    public final List<TaskIdentifier> taskIdentifierList;
 
-    public ScriptAnswer(boolean success, List<Result> resultList) {
+    public ScriptAnswer(boolean success, List<Result> resultList, List<TaskIdentifier> taskIdentifierList) {
         this.success = success;
+        this.taskIdentifierList = Collections.unmodifiableList(taskIdentifierList);
         this.resultList = Collections.unmodifiableList(resultList);
     }
 

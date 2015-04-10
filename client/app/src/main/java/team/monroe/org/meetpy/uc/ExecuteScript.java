@@ -15,6 +15,7 @@ import team.monroe.org.meetpy.services.ServerConfigurationProvider;
 import team.monroe.org.meetpy.uc.entities.ScriptAnswer;
 import team.monroe.org.meetpy.uc.entities.ScriptIdentifier;
 import team.monroe.org.meetpy.uc.entities.ServerConfiguration;
+import team.monroe.org.meetpy.uc.entities.TaskIdentifier;
 
 public class ExecuteScript extends UserCaseSupport<ExecuteScript.ExecutionRequest, ScriptAnswer>{
 
@@ -39,7 +40,7 @@ public class ExecuteScript extends UserCaseSupport<ExecuteScript.ExecutionReques
                     HttpManager.request_json(json),
                     HttpManager.details(),
                     HttpManager.response_json());
-          return extractResult(response.body);
+          return extractResult(request.identifier.serverId, response.body);
         } catch (HttpManager.InvalidBodyFormatException e) {
             throw new FailExecutionException(e,100);
         } catch (IOException e) {
@@ -47,7 +48,7 @@ public class ExecuteScript extends UserCaseSupport<ExecuteScript.ExecutionReques
         }
     }
 
-    private ScriptAnswer extractResult(Json json) {
+    private ScriptAnswer extractResult(String serverId, Json json) {
         boolean success = json.asObject().value("success", Boolean.class);
         List<ScriptAnswer.Result> resultList = new ArrayList<>();
         if(json.asObject().exists("results")) {
@@ -70,7 +71,14 @@ public class ExecuteScript extends UserCaseSupport<ExecuteScript.ExecutionReques
             }
 
         }
-        return new ScriptAnswer(success, resultList);
+        List<TaskIdentifier> taskIdentifierList = new ArrayList<>();
+        if(json.asObject().exists("sub_tasks")) {
+            for (int position = 0; json.asObject().asArray("sub_tasks").exists(position); position++) {
+                String taskId = json.asObject().asArray("sub_tasks").asString(position);
+                taskIdentifierList.add(new TaskIdentifier(serverId,taskId));
+            }
+        }
+        return new ScriptAnswer(success, resultList, taskIdentifierList);
     }
 
     public static class ExecutionRequest{

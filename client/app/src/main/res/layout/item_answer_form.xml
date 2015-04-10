@@ -8,7 +8,7 @@
     android:layout_marginLeft="10dp"
     android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
-    android:padding="10dp">
+    android:padding="15dp">
 
 
     <TextView
@@ -35,6 +35,28 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+
     </LinearLayout>
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/form_task_caption"
+        android:layout_below="@+id/form_child_content_panel"
+        style="@style/Text.Optional.Panel.Main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Task(s) Created"/>
+
+    <LinearLayout
+        android:layout_below="@+id/form_task_caption"
+        android:id="@+id/form_child_task_content_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+    </LinearLayout>
+
 
 </RelativeLayout>

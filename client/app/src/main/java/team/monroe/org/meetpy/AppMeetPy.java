@@ -88,7 +88,7 @@ public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
                 new ExecuteScript.ExecutionRequest(new ScriptIdentifier(script.serverId, script.id), data), new ValueAdapter<ScriptAnswer, AnswerFormComponent>() {
                     @Override
                     public AnswerFormComponent adapt(ScriptAnswer value) {
-                        return new AnswerFormComponent(value);
+                        return new AnswerFormComponent(value, AppMeetPy.this);
                     }
                 }, observer);
     }
