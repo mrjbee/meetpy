@@ -31,7 +31,7 @@ public class AnswerFormComponent {
 
     public void addUI(ViewGroup parentView, LayoutInflater inflater, Context context) {
         ViewGroup formView = (ViewGroup) inflater.inflate(R.layout.item_answer_form, parentView, false);
-        parentView.addView(formView,parentView.getChildCount());
+        parentView.addView(formView,0);
 
         childContainerView = (ViewGroup) formView.findViewById(R.id.form_child_content_panel);
         for (ResultComponent subComponent : componentList) {

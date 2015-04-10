@@ -49,6 +49,7 @@ public class ScriptExecutionActivity extends ActivitySupport<AppMeetPy> {
     private void installArgumentForm(ArgumentFormComponent formComponent) {
         final ViewGroup content = view(R.id.se_content_panel, ViewGroup.class);
         formComponent.addUI(content, getLayoutInflater(), this);
+        content.requestLayout();
         argumentFormComponent = formComponent;
         argumentFormComponent.setSubmitListener(new ArgumentFormComponent.SubmitListener(){
             @Override
@@ -72,6 +73,7 @@ public class ScriptExecutionActivity extends ActivitySupport<AppMeetPy> {
                 final ViewGroup content = view(R.id.se_content_panel, ViewGroup.class);
                 formComponent.addUI(content, getLayoutInflater(), application());
                 argumentFormComponent.progress(false);
+                content.requestLayout();
             }
 
             @Override
