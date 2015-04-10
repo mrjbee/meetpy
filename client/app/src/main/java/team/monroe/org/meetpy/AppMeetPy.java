@@ -13,12 +13,15 @@ import team.monroe.org.meetpy.uc.CreateServerConfiguration;
 import team.monroe.org.meetpy.uc.ExecuteScript;
 import team.monroe.org.meetpy.uc.GetScriptSignature;
 import team.monroe.org.meetpy.uc.GetScriptList;
+import team.monroe.org.meetpy.uc.GetTaskDetails;
 import team.monroe.org.meetpy.uc.entities.Script;
 import team.monroe.org.meetpy.uc.entities.ScriptAnswer;
 import team.monroe.org.meetpy.uc.entities.ScriptArgument;
 import team.monroe.org.meetpy.uc.entities.ScriptIdentifier;
 import team.monroe.org.meetpy.uc.entities.ServerConfiguration;
 import team.monroe.org.meetpy.services.ServerConfigurationProvider;
+import team.monroe.org.meetpy.uc.entities.Task;
+import team.monroe.org.meetpy.uc.entities.TaskIdentifier;
 import team.monroe.org.meetpy.ui.AnswerFormComponent;
 import team.monroe.org.meetpy.ui.ArgumentFormComponent;
 
@@ -91,5 +94,9 @@ public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
                         return new AnswerFormComponent(value, AppMeetPy.this);
                     }
                 }, observer);
+    }
+
+    public void getTaskData(TaskIdentifier taskIdentifier, ValueObserver<Task> observer) {
+        fetchValue(GetTaskDetails.class, taskIdentifier,new NoOpValueAdapter<Task>(),observer);
     }
 }

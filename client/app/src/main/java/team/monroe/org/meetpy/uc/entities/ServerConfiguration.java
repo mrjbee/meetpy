@@ -17,4 +17,12 @@ public class ServerConfiguration implements Serializable {
     public String buildUrl(String uri) {
         return url+uri;
     }
+
+    public String append(String... postfixes) {
+        StringBuilder builder = new StringBuilder(url);
+        for (String postfix : postfixes) {
+            builder.append("/").append(postfix);
+        }
+        return builder.toString();
+    }
 }

@@ -15,17 +15,19 @@
         android:text="Title"/>
 
     <TextView
+        android:gravity="clip_vertical"
         android:layout_below="@+id/task_title"
         android:layout_alignParentRight="true"
         style="@style/Text.Optional.Panel.Main"
         android:id="@+id/task_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="20dp"
+        android:layout_marginRight="30dp"
         android:text="Status"/>
 
 
     <ProgressBar
+        android:gravity="clip_vertical"
         android:layout_toLeftOf="@+id/task_status"
         android:layout_below="@+id/task_title"
         android:id="@+id/task_progress"
@@ -34,15 +36,15 @@
         android:layout_height="wrap_content"
         android:max="100"
         android:indeterminate="false"
-        android:paddingRight="5dp"
-        android:paddingLeft="20dp"
+        android:paddingRight="30dp"
+        android:paddingLeft="10dp"
         />
 
 
     <TextView
         android:layout_below="@+id/task_progress"
         style="@style/Text.Optional.Panel.Main"
-        android:id="@+id/component_description"
+        android:id="@+id/task_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight="20dp"
