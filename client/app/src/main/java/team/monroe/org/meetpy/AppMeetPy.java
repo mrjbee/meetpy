@@ -1,14 +1,19 @@
 package team.monroe.org.meetpy;
 import org.monroe.team.android.box.app.ApplicationSupport;
 import org.monroe.team.android.box.data.DataProvider;
+import org.monroe.team.android.box.json.Json;
+import org.monroe.team.android.box.services.HttpManager;
 import org.monroe.team.corebox.app.Model;
+import org.monroe.team.corebox.uc.UserCaseSupport;
 import org.monroe.team.corebox.utils.Closure;
 import org.monroe.team.corebox.utils.Lists;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import team.monroe.org.meetpy.uc.CheckServerOnline;
 import team.monroe.org.meetpy.uc.CreateServerConfiguration;
 import team.monroe.org.meetpy.uc.ExecuteScript;
 import team.monroe.org.meetpy.uc.GetScriptSignature;
@@ -98,5 +103,9 @@ public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
 
     public void getTaskData(TaskIdentifier taskIdentifier, ValueObserver<Task> observer) {
         fetchValue(GetTaskDetails.class, taskIdentifier,new NoOpValueAdapter<Task>(),observer);
+    }
+
+    public void isServerOnline(String serverId, ValueObserver<Boolean> valueObserver) {
+        fetchValue(CheckServerOnline.class,serverId,new NoOpValueAdapter<Boolean>(),valueObserver);
     }
 }

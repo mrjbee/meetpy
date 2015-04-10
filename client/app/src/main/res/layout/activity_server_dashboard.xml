@@ -1,0 +1,18 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="@style/Panel.Main"
+    android:paddingRight="10dp"
+    android:paddingLeft="5dp"
+    tools:context="team.monroe.org.meetpy.ServerDashboardActivity">
+
+    <ListView
+        android:id="@+id/sd_main_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:divider="@android:color/transparent">
+
+    </ListView>
+
+</RelativeLayout>
