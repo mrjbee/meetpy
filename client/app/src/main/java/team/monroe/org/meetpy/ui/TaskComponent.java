@@ -47,7 +47,7 @@ public class TaskComponent {
         progressBar = (ProgressBar) root.findViewById(R.id.task_progress);
         progressBar.setProgress(0);
         refreshTimer = new Timer();
-        fetchTask();
+        //fetchTask();
     }
 
     private void fetchTask() {

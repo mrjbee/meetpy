@@ -2,6 +2,8 @@ package team.monroe.org.meetpy;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.monroe.team.android.box.app.ActivitySupport;
@@ -11,8 +13,13 @@ import org.monroe.team.android.box.app.ui.GetViewImplementation;
 import org.monroe.team.android.box.data.DataProvider;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import team.monroe.org.meetpy.uc.entities.TaskIdentifier;
+import team.monroe.org.meetpy.ui.TaskComponent;
 
 
 public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
@@ -43,15 +50,6 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             public void onFetch(ArrayList arrayList) {
                 serverListAdapter.clear();
                 serverListAdapter.addAll(arrayList);
-                Representations.Server server = (Representations.Server) arrayList.get(0);
-                for (int i=0;i<20;i++){
-                    boolean useRealUUID = Math.random()>0.5f;
-                    serverListAdapter.add(new Representations.Server(
-                            useRealUUID?server.id:"debug"+"_"+i,
-                            useRealUUID?server.serverAlias+"_REAL":server.serverAlias+"_DEBUG",
-                            server.hostDescription+"_"+i
-                    ));
-                }
                 serverListAdapter.notifyDataSetChanged();
             }
 
@@ -83,6 +81,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
         private final View root;
         private Representations.Server myServer;
         private Timer refreshTimer;
+        private Button showTaskBtn;
 
 
         private ServerViewHolder(View rootView) {
@@ -90,6 +89,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             titleText = (TextView) rootView.findViewById(R.id.item_title);
             descriptionText = (TextView) rootView.findViewById(R.id.item_description);
             statusText = (TextView) rootView.findViewById(R.id.item_status_value);
+            showTaskBtn = (Button) rootView.findViewById(R.id.item_task_button);
         }
 
         @Override
@@ -98,8 +98,10 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             titleText.setText(server.serverAlias);
             descriptionText.setText(server.hostDescription);
             statusText.setText("");
+            showTaskBtn.setVisibility(View.INVISIBLE);
+
             refreshTimer = new Timer(true);
-            updateServerDetails(server);
+            updateServerTasks(server);
         }
 
         @Override
@@ -110,37 +112,49 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             }
         }
 
-        private void updateServerDetails(final Representations.Server server) {
-            //TODO: Change this on get tasks
-            application().isServerOnline(server.id, new ApplicationSupport.ValueObserver<Boolean>(){
-                private final Representations.Server requestedServer = server;
+        private void updateServerTasks(final Representations.Server server) {
+            application().getServerTasks(server.id, new ApplicationSupport.ValueObserver<List<TaskIdentifier>>() {
+
                 @Override
-                public void onSuccess(Boolean value) {
-                    updateServerStatusAndRequest(value,server);
+                public void onSuccess(List<TaskIdentifier> taskIdentifierList) {
+                    if (server == myServer) {
+                        renewTaskComponents(taskIdentifierList);
+                        updateServerStatusAndRequest(true, server);
+                    }
                 }
+
                 @Override
                 public void onFail(int errorCode) {
-                   updateServerStatusAndRequest(false,server);
+                    if (server == myServer) {
+                        renewTaskComponents(Collections.EMPTY_LIST);
+                        updateServerStatusAndRequest(false, server);
+                    }
                 }
+
             });
         }
 
-        private void updateServerStatusAndRequest(Boolean value, final Representations.Server checkInstance) {
-            if ( checkInstance == myServer){
-                  statusText.setText(value?"Online":"Offline");
-                  refreshTimer.schedule(new TimerTask() {
-                      @Override
-                      public void run() {
-                          if (checkInstance != myServer) return;
-                          if (-1 != serverListAdapter.getPosition(checkInstance)) {
-                              updateServerDetails(checkInstance);
-                              return;
-                          } else {
-                              cleanup();
-                          }
+        private void renewTaskComponents(List<TaskIdentifier> taskIdentifierList) {
+            showTaskBtn.setText(taskIdentifierList.size()+" task(s)");
+            showTaskBtn.setVisibility(taskIdentifierList.isEmpty()?View.INVISIBLE:View.VISIBLE);
+        }
+
+        private void updateServerStatusAndRequest(Boolean value, final Representations.Server assertInstance) {
+              statusText.setText(value?"Online":"Offline");
+              refreshTimer.schedule(new TimerTask() {
+                  @Override
+                  public void run() {
+                      //double check as it`s not UI thread and server might be different
+                      if (assertInstance != myServer) return;
+
+                      if (-1 != serverListAdapter.getPosition(assertInstance)) {
+                          updateServerTasks(assertInstance);
+                          return;
+                      } else {
+                          cleanup();
                       }
-                  }, 1000);
-            }
+                  }
+              }, 1000);
         }
 
     }

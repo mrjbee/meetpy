@@ -10,10 +10,9 @@
     >
 
     <RelativeLayout
-        android:background="@drawable/panel_round_whitest_2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp">
+        android:padding="5dp">
 
     <TextView
         style="@style/Text.Optional.Panel.Main"
@@ -49,25 +48,14 @@
         android:layout_below="@+id/item_title"
         />
 
-    <TextView
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:id="@+id/item_task_caption"
+    <Button
+        android:layout_alignParentRight="true"
+        android:id="@+id/item_task_button"
         android:layout_below="@+id/item_description"
-        style="@style/Text.Optional.Panel.Main"
+        style="@style/Button.Link.Small.Main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Task(s)"/>
-
-    <LinearLayout
-        android:layout_below="@+id/item_task_caption"
-        android:id="@+id/item_task_content_panel"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-
-    </LinearLayout>
+        android:text="20 Task(s)"/>
     </RelativeLayout>
 
 

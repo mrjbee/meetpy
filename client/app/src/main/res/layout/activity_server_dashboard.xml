@@ -5,14 +5,55 @@
     style="@style/Panel.Main"
     android:paddingRight="10dp"
     android:paddingLeft="5dp"
+    android:paddingTop="20dp"
     tools:context="team.monroe.org.meetpy.ServerDashboardActivity">
 
+    <ImageView
+        android:layout_marginRight="5dp"
+        android:id="@+id/sd_top_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/ic_launcher"/>
+
+    <TextView
+        style="@style/Text.Caption.Panel.Main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Server Dashboard"
+        android:id="@+id/sd_caption"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/sd_top_icon"/>
+
+    <TextView
+        style="@style/Text.Optional.Panel.Main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Here you could find all your servers"
+        android:id="@+id/sd_description"
+        android:layout_below="@+id/sd_caption"
+        android:layout_alignLeft="@+id/sd_caption"
+        android:layout_marginBottom="15dp"/>
+
+
+
     <ListView
+        android:layout_below="@+id/sd_description"
         android:id="@+id/sd_main_list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:divider="@android:color/transparent">
+        >
 
     </ListView>
+
+    <ImageView
+        android:scaleType="fitXY"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/se_shadow_image"
+        android:src="@drawable/shadow_down"
+        android:layout_below="@+id/sd_description"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

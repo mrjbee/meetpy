@@ -18,6 +18,7 @@ import team.monroe.org.meetpy.uc.CreateServerConfiguration;
 import team.monroe.org.meetpy.uc.ExecuteScript;
 import team.monroe.org.meetpy.uc.GetScriptSignature;
 import team.monroe.org.meetpy.uc.GetScriptList;
+import team.monroe.org.meetpy.uc.GetServerTasks;
 import team.monroe.org.meetpy.uc.GetTaskDetails;
 import team.monroe.org.meetpy.uc.entities.Script;
 import team.monroe.org.meetpy.uc.entities.ScriptAnswer;
@@ -107,5 +108,9 @@ public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
 
     public void isServerOnline(String serverId, ValueObserver<Boolean> valueObserver) {
         fetchValue(CheckServerOnline.class,serverId,new NoOpValueAdapter<Boolean>(),valueObserver);
+    }
+
+    public void getServerTasks(String serverId, ValueObserver<List<TaskIdentifier>> observer){
+        fetchValue(GetServerTasks.class,serverId,new NoOpValueAdapter<List<TaskIdentifier>>(),observer);
     }
 }
