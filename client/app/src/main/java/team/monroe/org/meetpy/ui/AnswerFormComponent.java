@@ -17,6 +17,7 @@ public class AnswerFormComponent {
     private final ScriptAnswer answer;
     private final List<ResultComponent> componentList = new ArrayList<>();
     private ViewGroup childContainerView;
+    private ViewGroup rootView;
 
     public AnswerFormComponent(ScriptAnswer answer) {
         this.answer = answer;
@@ -30,10 +31,10 @@ public class AnswerFormComponent {
     }
 
     public void addUI(ViewGroup parentView, LayoutInflater inflater, Context context) {
-        ViewGroup formView = (ViewGroup) inflater.inflate(R.layout.item_answer_form, parentView, false);
-        parentView.addView(formView,0);
+        rootView = (ViewGroup) inflater.inflate(R.layout.item_answer_form, parentView, false);
+        parentView.addView(rootView,0);
 
-        childContainerView = (ViewGroup) formView.findViewById(R.id.form_child_content_panel);
+        childContainerView = (ViewGroup) rootView.findViewById(R.id.form_child_content_panel);
         for (ResultComponent subComponent : componentList) {
             int layoutId = subComponent.getLayoutId();
             View subComponentView = inflater.inflate(layoutId, childContainerView, false);
@@ -41,7 +42,11 @@ public class AnswerFormComponent {
             childContainerView.addView(subComponentView);
         }
 
-        TextView status = (TextView) formView.findViewById(R.id.form_status_value);
+        TextView status = (TextView) rootView.findViewById(R.id.form_status_value);
         status.setText(answer.success ? "Success":"Fail");
+    }
+
+    public void releaseUI(ViewGroup parentView) {
+        parentView.removeView(rootView);
     }
 }

@@ -17,6 +17,7 @@ public class ScriptExecutionActivity extends ActivitySupport<AppMeetPy> {
 
     private Representations.Script script;
     private ArgumentFormComponent argumentFormComponent;
+    private AnswerFormComponent answerFormComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,30 +56,43 @@ public class ScriptExecutionActivity extends ActivitySupport<AppMeetPy> {
             @Override
             public void onValues(Map<String, Object> data) {
                 argumentFormComponent.progress(true);
+                argumentFormComponent.userInput(false);
+                releasePreviousAnswers();
                 executeScript(data);
             }
 
             @Override
             public void onValueNotSet(String fieldTitle, String fieldId) {
+                releasePreviousAnswers();
                 Toast.makeText(application(),"Value for '"+fieldTitle+"' not set",Toast.LENGTH_LONG).show();
                 argumentFormComponent.highlightComponent(fieldId);
             }
         });
     }
 
+    private void releasePreviousAnswers() {
+        if (answerFormComponent != null) {
+            answerFormComponent.releaseUI(view(R.id.se_content_panel, ViewGroup.class));
+            answerFormComponent = null;
+        }
+    }
+
     private void executeScript(Map<String, Object> data) {
         application().executeScript(script, data, new ApplicationSupport.ValueObserver<AnswerFormComponent>() {
             @Override
             public void onSuccess(AnswerFormComponent formComponent) {
+                answerFormComponent = formComponent;
                 final ViewGroup content = view(R.id.se_content_panel, ViewGroup.class);
-                formComponent.addUI(content, getLayoutInflater(), application());
+                answerFormComponent.addUI(content, getLayoutInflater(), application());
                 argumentFormComponent.progress(false);
+                argumentFormComponent.userInput(true);
                 content.requestLayout();
             }
 
             @Override
             public void onFail(int errorCode) {
                 argumentFormComponent.progress(false);
+                argumentFormComponent.userInput(true);
                 toast_UnsupportedErrorCode(errorCode);
             }
         });
