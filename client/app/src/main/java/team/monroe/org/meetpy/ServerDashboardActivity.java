@@ -1,5 +1,6 @@
 package team.monroe.org.meetpy;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,7 +98,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             myServer = server;
             titleText.setText(server.serverAlias);
             descriptionText.setText(server.hostDescription);
-            statusText.setText("");
+            statusText.setText("       ");
             showTaskBtn.setVisibility(View.INVISIBLE);
 
             refreshTimer = new Timer(true);
@@ -110,6 +111,8 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                 refreshTimer.cancel();
                 refreshTimer.purge();
             }
+            showTaskBtn.setOnClickListener(null);
+            statusText.setText("       ");
         }
 
         private void updateServerTasks(final Representations.Server server) {
@@ -134,13 +137,25 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             });
         }
 
-        private void renewTaskComponents(List<TaskIdentifier> taskIdentifierList) {
+        private void renewTaskComponents(final List<TaskIdentifier> taskIdentifierList) {
             showTaskBtn.setText(taskIdentifierList.size()+" task(s)");
             showTaskBtn.setVisibility(taskIdentifierList.isEmpty()?View.INVISIBLE:View.VISIBLE);
+            if (taskIdentifierList.isEmpty()){
+                showTaskBtn.setOnClickListener(null);
+            }else{
+                showTaskBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(application(), ServerTaskActivity.class);
+                        intent.putExtra("server_id", myServer.id);
+                        startActivity(intent);
+                    }
+                });
+            }
         }
 
         private void updateServerStatusAndRequest(Boolean value, final Representations.Server assertInstance) {
-              statusText.setText(value?"Online":"Offline");
+              statusText.setText(value ? "Online":"Offline");
               refreshTimer.schedule(new TimerTask() {
                   @Override
                   public void run() {

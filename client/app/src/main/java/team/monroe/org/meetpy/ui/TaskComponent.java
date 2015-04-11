@@ -39,6 +39,10 @@ public class TaskComponent {
         return root;
     }
 
+    public ViewGroup getRootView() {
+        return root;
+    }
+
     public void onCreate() {
 
         titleText = (TextView) root.findViewById(R.id.task_title);
@@ -46,9 +50,8 @@ public class TaskComponent {
         statusText = (TextView) root.findViewById(R.id.task_status);
         progressBar = (ProgressBar) root.findViewById(R.id.task_progress);
         progressBar.setProgress(0);
-        refreshTimer = new Timer();
-        //fetchTask();
-    }
+        onResume();
+      }
 
     private void fetchTask() {
         taskDataProvider.getTaskData(taskIdentifier, new ApplicationSupport.ValueObserver<Task>() {
@@ -83,7 +86,8 @@ public class TaskComponent {
         }
     }
 
-    private void scheduleTaskFetching() {
+    private synchronized void scheduleTaskFetching() {
+        if (refreshTimer == null)return;
         refreshTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -92,10 +96,25 @@ public class TaskComponent {
         }, 1000);
     }
 
-    public void onDestroy() {
+    public synchronized void onDestroy() {
         if (refreshTimer != null){
             refreshTimer.cancel();
             refreshTimer.purge();
         }
+    }
+
+    public TaskIdentifier getId() {
+        return taskIdentifier;
+    }
+
+    public synchronized void onResume() {
+        if (refreshTimer == null){
+            refreshTimer = new Timer(true);
+            fetchTask();
+        }
+    }
+
+    public synchronized void onPause() {
+        onDestroy();
     }
 }

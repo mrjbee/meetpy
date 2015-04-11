@@ -7,5 +7,6 @@
     <string name="title_activity_server_configuration">Server Configuration</string>
     <string name="title_activity_script_execution">Script Execution</string>
     <string name="title_activity_server_dashboard">Servers Dashboard</string>
+    <string name="title_activity_server_task">Tasks</string>
 
 </resources>
