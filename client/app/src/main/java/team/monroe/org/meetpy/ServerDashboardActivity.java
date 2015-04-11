@@ -112,6 +112,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                 refreshTimer.purge();
             }
             showTaskBtn.setOnClickListener(null);
+            root.setOnClickListener(null);
             statusText.setText("       ");
         }
 
@@ -170,6 +171,14 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                       }
                   }
               }, 1000);
+              root.setOnClickListener(!value?null: new View.OnClickListener(){
+                  @Override
+                  public void onClick(View v) {
+                      Intent intent = new Intent(application(), ServerScriptActivity.class);
+                      intent.putExtra("server_id",myServer.id);
+                      startActivity(intent);
+                  }
+              });
         }
 
     }

@@ -38,8 +38,12 @@
         </activity>
         <activity
             android:name=".ServerTaskActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_server_task" >
+            android:label="@string/title_activity_server_task"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ServerScriptActivity"
+            android:label="@string/title_activity_server_script" >
         </activity>
     </application>
 
