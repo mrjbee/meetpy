@@ -48,7 +48,7 @@ public class ScriptExecutionActivity extends ActivitySupport<AppMeetPy> {
     }
 
     private void installArgumentForm(ArgumentFormComponent formComponent) {
-        final ViewGroup content = view(R.id.se_content_panel, ViewGroup.class);
+        final ViewGroup content = view(R.id.script_content_panel, ViewGroup.class);
         formComponent.addUI(content, getLayoutInflater(), this);
         content.requestLayout();
         argumentFormComponent = formComponent;
@@ -72,7 +72,7 @@ public class ScriptExecutionActivity extends ActivitySupport<AppMeetPy> {
 
     private void releasePreviousAnswers() {
         if (answerFormComponent != null) {
-            answerFormComponent.releaseUI(view(R.id.se_content_panel, ViewGroup.class));
+            answerFormComponent.releaseUI(view(R.id.script_content_panel, ViewGroup.class));
             answerFormComponent = null;
         }
     }
@@ -82,7 +82,7 @@ public class ScriptExecutionActivity extends ActivitySupport<AppMeetPy> {
             @Override
             public void onSuccess(AnswerFormComponent formComponent) {
                 answerFormComponent = formComponent;
-                final ViewGroup content = view(R.id.se_content_panel, ViewGroup.class);
+                final ViewGroup content = view(R.id.script_content_panel, ViewGroup.class);
                 answerFormComponent.addUI(content, getLayoutInflater(), application());
                 argumentFormComponent.progress(false);
                 argumentFormComponent.userInput(true);

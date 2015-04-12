@@ -51,6 +51,12 @@
             android:theme="@style/AppTheme.Transperent.NoAnimation"
             android:label="@string/title_activity_server_view" >
         </activity>
+        <activity
+            android:name=".ScripActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Transperent.NoAnimation"
+            android:label="Script Execution" >
+        </activity>
     </application>
 
 </manifest>

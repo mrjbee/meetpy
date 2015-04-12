@@ -44,7 +44,7 @@
             android:paddingBottom="20dp"
             android:paddingTop="20dp"
             android:orientation="vertical"
-            android:id="@+id/se_content_panel"
+            android:id="@+id/script_content_panel"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:animateLayoutChanges="true">

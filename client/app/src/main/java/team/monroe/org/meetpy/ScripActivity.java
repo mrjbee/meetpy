@@ -1,19 +1,13 @@
 package team.monroe.org.meetpy;
 
 import android.animation.Animator;
-import android.content.Intent;
-import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.monroe.team.android.box.app.ActivitySupport;
 import org.monroe.team.android.box.app.ApplicationSupport;
-import org.monroe.team.android.box.app.ui.GenericListViewAdapter;
-import org.monroe.team.android.box.app.ui.GetViewImplementation;
-import org.monroe.team.android.box.app.ui.RelativeLayoutExt;
 import org.monroe.team.android.box.app.ui.SlideTouchGesture;
 import org.monroe.team.android.box.app.ui.animation.AnimatorListenerSupport;
 import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceController;
@@ -21,11 +15,10 @@ import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControl
 import org.monroe.team.android.box.app.ui.animation.apperrance.DefaultAppearanceController;
 import org.monroe.team.android.box.utils.DisplayUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Map;
 
+import team.monroe.org.meetpy.ui.AnswerFormComponent;
+import team.monroe.org.meetpy.ui.ArgumentFormComponent;
 import team.monroe.org.meetpy.ui.CircleAppearanceRelativeLayout;
 import team.monroe.org.meetpy.ui.RelativeLayoutHack1;
 
@@ -39,52 +32,50 @@ import static org.monroe.team.android.box.app.ui.animation.apperrance.Appearance
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.xSlide;
 
 
-public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
+public class ScripActivity extends ActivitySupport<AppMeetPy> {
 
     private boolean awesomeAppearance = true;
     private AppearanceController contentAC;
-    private Representations.Server myServer;
-
-    private GenericListViewAdapter<Representations.Script,GetViewImplementation.ViewHolder<Representations.Script>> scriptListAdapter;
-    private Timer refreshTimer;
-    private ListView scriptsListView;
+    private Representations.Script script;
+    private ArgumentFormComponent argumentFormComponent;
+    private AnswerFormComponent answerFormComponent;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         crunch_requestNoAnimation();
-        setContentView(R.layout.activity_server_view);
-        myServer = getFromIntent("server",null);
-        PointF position = getFromIntent("position" , null);
-        View baseContainer= view(R.id.smoke_view);
+        setContentView(R.layout.activity_script);
+        script = getFromIntent("script", null);
+        View baseContainer = view(R.id.smoke_view);
 
         contentAC = combine(animateAppearance(view(R.id.real_content), xSlide(0f, DisplayUtils.screenWidth(getResources())))
                         .showAnimation(duration_constant(500), interpreter_accelerate_decelerate())
                         .hideAnimation(duration_constant(300), interpreter_decelerate(0.8f)),
-                animateAppearance(baseContainer, alpha(1f,0.2f))
+                animateAppearance(baseContainer, alpha(1f, 0.2f))
                         .showAnimation(duration_constant(300), interpreter_accelerate(0.8f))
                         .hideAnimation(duration_constant(500), interpreter_decelerate(0.8f))
         );
 
-        RelativeLayoutHack1 shadow_dog_nail_view = view(R.id.real_content,RelativeLayoutHack1.class);
+        RelativeLayoutHack1 shadow_dog_nail_view = view(R.id.real_content, RelativeLayoutHack1.class);
         shadow_dog_nail_view.hackListener = new RelativeLayoutHack1.TranslationListener() {
             @Override
             public void onX(float value) {
-                if (value < DisplayUtils.dpToPx(4,getResources())){
+                if (value < DisplayUtils.dpToPx(4, getResources())) {
                     view(R.id.shadow_view).setVisibility(View.GONE);
-                }else{
+                } else {
                     view(R.id.shadow_view).setVisibility(View.VISIBLE);
                 }
             }
         };
-        view_text(R.id.page_caption).setText(myServer.serverAlias);
+        view_text(R.id.page_caption).setText(script.scriptTitle);
+        view_text(R.id.script_description_text).setText(script.scriptDescription);
         final float maxSlideValue = DisplayUtils.dpToPx(200, getResources());
         view(R.id.slide_back_stub).setOnTouchListener(new SlideTouchGesture(maxSlideValue, SlideTouchGesture.Axis.X_RIGHT) {
             @Override
             protected void onProgress(float x, float y, float slideValue, float fraction) {
-                view(R.id.real_content).setTranslationX(maxSlideValue*fraction);
-                view(R.id.smoke_view).setAlpha(1-0.5f*fraction);
+                view(R.id.real_content).setTranslationX(maxSlideValue * fraction);
+                view(R.id.smoke_view).setAlpha(1 - 0.5f * fraction);
             }
 
             @Override
@@ -100,62 +91,79 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
         });
 
 
-        if(isFirstRun(savedInstanceState)){
+        if (isFirstRun(savedInstanceState)) {
             contentAC.hideWithoutAnimation();
-        }else {
+        } else {
             contentAC.showWithoutAnimation();
         }
-
-        scriptsListView = view_list(R.id.main_list);
-        scriptListAdapter = new GenericListViewAdapter<Representations.Script, GetViewImplementation.ViewHolder<Representations.Script>>(getApplicationContext(),new GetViewImplementation.ViewHolderFactory<GetViewImplementation.ViewHolder<Representations.Script>>() {
-            @Override
-            public GetViewImplementation.ViewHolder<Representations.Script> create(final View convertView) {
-                return new GetViewImplementation.ViewHolder<Representations.Script>() {
-
-                    TextView valueText = (TextView) convertView.findViewById(R.id.item_value_text);
-                    TextView subValueText = (TextView) convertView.findViewById(R.id.item_sub_value_text);
-
-                    @Override
-                    public void update(Representations.Script script, int position) {
-                        valueText.setText(script.scriptTitle);
-                        subValueText.setText(script.scriptDescription);
-                    }
-
-                    @Override
-                    public void cleanup() {}
-                };
-            }
-        },R.layout.item_script);
-        scriptsListView.setAdapter(scriptListAdapter);
-        scriptsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Representations.Script script = (Representations.Script) parent.getItemAtPosition(position);
-                requestScriptForm(script);
-            }
-        });
-
+        fetchScriptSignature();
     }
 
-    private void requestScriptForm(Representations.Script script) {
-        Intent intent = new Intent(this, ScripActivity.class);
-        intent.putExtra("script",script);
-        startActivity(intent);
-    }
-
-    private void fetchServerScripts() {
-        application().getScriptListForServer(myServer.id, new ApplicationSupport.ValueObserver<List<Representations.Script>>() {
+    private void fetchScriptSignature() {
+        application().getScriptSignature(script, new ApplicationSupport.ValueObserver<ArgumentFormComponent>() {
             @Override
-            public void onSuccess(List<Representations.Script> value) {
-                scriptListAdapter.clear();
-                scriptListAdapter.addAll(value);
-                scriptListAdapter.notifyDataSetChanged();
-                scheduleNextFetch();
+            public void onSuccess(ArgumentFormComponent argFormView) {
+                installArgumentForm(argFormView);
             }
 
             @Override
             public void onFail(int errorCode) {
-                onSuccess(Collections.EMPTY_LIST);
+                toast_UnsupportedErrorCode(errorCode);
+            }
+        });
+    }
+
+    private void toast_UnsupportedErrorCode(int errorCode) {
+        Toast.makeText(application(), "Upps something goes wrong! Error code = " + errorCode, Toast.LENGTH_LONG).show();
+    }
+
+    private void installArgumentForm(ArgumentFormComponent formComponent) {
+        final ViewGroup content = view(R.id.script_content_panel, ViewGroup.class);
+        formComponent.addUI(content, getLayoutInflater(), this);
+        content.requestLayout();
+        argumentFormComponent = formComponent;
+        argumentFormComponent.setSubmitListener(new ArgumentFormComponent.SubmitListener(){
+            @Override
+            public void onValues(Map<String, Object> data) {
+                argumentFormComponent.progress(true);
+                argumentFormComponent.userInput(false);
+                releasePreviousAnswers();
+                executeScript(data);
+            }
+
+            @Override
+            public void onValueNotSet(String fieldTitle, String fieldId) {
+                releasePreviousAnswers();
+                Toast.makeText(application(),"Value for '"+fieldTitle+"' not set",Toast.LENGTH_LONG).show();
+                argumentFormComponent.highlightComponent(fieldId);
+            }
+        });
+    }
+
+    private void releasePreviousAnswers() {
+        if (answerFormComponent != null) {
+            answerFormComponent.releaseUI(view(R.id.script_content_panel, ViewGroup.class));
+            answerFormComponent = null;
+        }
+    }
+
+    private void executeScript(Map<String, Object> data) {
+        application().executeScript(script, data, new ApplicationSupport.ValueObserver<AnswerFormComponent>() {
+            @Override
+            public void onSuccess(AnswerFormComponent formComponent) {
+                answerFormComponent = formComponent;
+                final ViewGroup content = view(R.id.script_content_panel, ViewGroup.class);
+                answerFormComponent.addUI(content, getLayoutInflater(), application());
+                argumentFormComponent.progress(false);
+                argumentFormComponent.userInput(true);
+                content.requestLayout();
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                argumentFormComponent.progress(false);
+                argumentFormComponent.userInput(true);
+                toast_UnsupportedErrorCode(errorCode);
             }
         });
     }
@@ -166,30 +174,11 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
         if (isFirstRun() && awesomeAppearance) {
             contentAC.show();
         }
-        refreshTimer = new Timer(true);
-        fetchServerScripts();
-    }
+     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopTimer();
-    }
-
-    private synchronized void stopTimer() {
-        refreshTimer.cancel();
-        refreshTimer.purge();
-        refreshTimer = null;
-    }
-
-    private synchronized void  scheduleNextFetch() {
-        if (refreshTimer == null)return;
-        refreshTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                fetchServerScripts();
-            }
-        }, 5000);
     }
 
     @Override
