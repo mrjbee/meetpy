@@ -3,12 +3,13 @@ package team.monroe.org.meetpy;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +26,6 @@ import static org.monroe.team.android.box.app.ui.animation.apperrance.Appearance
 import org.monroe.team.android.box.data.DataProvider;
 import org.monroe.team.android.box.event.Event;
 import org.monroe.team.android.box.utils.DisplayUtils;
-import org.monroe.team.corebox.log.L;
 import org.monroe.team.corebox.utils.Closure;
 
 import java.util.ArrayList;
@@ -360,7 +360,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                 refreshTimer.purge();
             }
             showTaskBtn.setOnClickListener(null);
-            root.setOnClickListener(null);
+            root.setOnTouchListener(null);
         }
 
         private void updateServerTasks(final Representations.Server server) {
@@ -423,12 +423,14 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                       }
                   }
               }, 1000);
-              root.setOnClickListener(!value?null: new View.OnClickListener(){
+
+              root.setOnTouchListener(!value ? null : new View.OnTouchListener() {
                   @Override
-                  public void onClick(View v) {
-                      Intent intent = new Intent(application(), ServerScriptActivity.class);
-                      intent.putExtra("server_id",myServer.id);
-                      startActivity(intent);
+                  public boolean onTouch(View v, MotionEvent event) {
+                      if (event.getAction() == MotionEvent.ACTION_UP){
+                        showDetails(myServer, new PointF(event.getRawX(), event.getRawY()));
+                      }
+                      return true;
                   }
               });
         }
@@ -442,5 +444,15 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
         }else {
             super.onBackPressed();
         }
+    }
+
+    private void showDetails(Representations.Server server, PointF pointF) {
+        final Intent intent = new Intent(application(), ServerViewActivity.class);
+        int[] root_location = new int[2];
+        view(R.id.sd_header).getLocationOnScreen(root_location);
+        pointF.offset(-root_location[0], -root_location[1]);
+        intent.putExtra("position", pointF);
+        intent.putExtra("server",server);
+        startActivity(intent);
     }
 }

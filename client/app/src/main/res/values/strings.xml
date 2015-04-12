@@ -9,5 +9,6 @@
     <string name="title_activity_server_dashboard">Servers Dashboard</string>
     <string name="title_activity_server_task">Tasks</string>
     <string name="title_activity_server_script">Scripts</string>
+    <string name="title_activity_server_view">Server</string>
 
 </resources>

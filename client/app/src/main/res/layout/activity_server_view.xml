@@ -1,0 +1,82 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="team.monroe.org.meetpy.ServerViewActivity">
+    <team.monroe.org.meetpy.ui.CircleAppearanceRelativeLayout
+        android:id="@+id/smoke_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#b9000000"
+            />
+    </team.monroe.org.meetpy.ui.CircleAppearanceRelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/real_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        style="@style/Page.Background"
+        android:orientation="vertical"
+        tools:context="team.monroe.org.meetpy.ServerDashboardActivity">
+
+        <RelativeLayout
+            android:id="@+id/sd_header"
+            style="@style/Page.Header">
+
+            <TextView
+                style="@style/Text.Header.Caption"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Server Name"
+                android:id="@+id/page_caption"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/sd_hidden_space"
+            android:layout_width="fill_parent"
+            android:layout_height="0px">
+
+            <LinearLayout
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/sd_sub_body"
+                android:layout_below="@+id/sd_header"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="40dp"
+                android:paddingRight="40dp"
+                android:paddingTop="10dp"
+                >
+            </LinearLayout>
+        </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/sd_body"
+            android:layout_below="@+id/sd_header"
+            style="@style/Page.Body"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <team.monroe.org.meetpy.ui.MyListView
+                android:id="@+id/sd_main_list"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/slide_back_stub"
+        android:layout_width="50dp"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" />
+
+</RelativeLayout>
