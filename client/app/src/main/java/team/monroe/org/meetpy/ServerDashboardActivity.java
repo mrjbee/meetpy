@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -321,19 +322,19 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
 
         private final TextView titleText;
         private final TextView descriptionText;
-        private final TextView statusText;
         private final View root;
         private Representations.Server myServer;
         private Timer refreshTimer;
-        private Button showTaskBtn;
+        private TextView showTaskBtn;
+        private ImageView imageView;
 
 
         private ServerViewHolder(View rootView) {
             root = rootView;
             titleText = (TextView) rootView.findViewById(R.id.item_title);
             descriptionText = (TextView) rootView.findViewById(R.id.item_description);
-            statusText = (TextView) rootView.findViewById(R.id.item_status_value);
-            showTaskBtn = (Button) rootView.findViewById(R.id.item_task_button);
+            showTaskBtn = (TextView) rootView.findViewById(R.id.item_task_button);
+            imageView = (ImageView) rootView.findViewById(R.id.item_icon);
         }
 
         @Override
@@ -348,6 +349,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             descriptionText.setText(server.hostDescription);
             showTaskBtn.setVisibility(View.INVISIBLE);
             refreshTimer = new Timer(true);
+            imageView.setImageResource(R.drawable.comp_offline);
             updateServerTasks(server);
         }
 
@@ -401,7 +403,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
         }
 
         private void updateServerStatusAndRequest(Boolean value, final Representations.Server assertInstance) {
-              statusText.setText(value ? "Online":"Offline");
+              imageView.setImageResource(value ? R.drawable.comp_online : R.drawable.comp_offline);
               refreshTimer.schedule(new TimerTask() {
                   @Override
                   public void run() {
@@ -433,4 +435,12 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if (isSubContentVisible()){
+            hideSubContent();
+        }else {
+            super.onBackPressed();
+        }
+    }
 }

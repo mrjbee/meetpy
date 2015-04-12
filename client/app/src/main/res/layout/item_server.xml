@@ -5,57 +5,55 @@
     android:layout_height="wrap_content"
     android:paddingLeft="15dp"
     android:paddingRight="15dp"
-    android:paddingTop="3dp"
-    android:paddingBottom="3dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
     >
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp">
+        android:layout_margin="10dp"
+        android:padding="10dp">
+
+    <ImageView
+        android:layout_marginTop="5dp"
+        android:id="@+id/item_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/comp_offline"/>
+
 
     <TextView
-        style="@style/Text.Optional.Panel.Main"
-        android:paddingLeft="5dp"
-        android:id="@+id/item_status_value"
+        android:layout_marginLeft="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="italic"
-        android:text="Online"
-        android:layout_alignParentRight="true"/>
-
-    <TextView
-        style="@style/Text.Optional.Panel.Main"
-        android:layout_toLeftOf="@+id/item_status_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Status"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/Text.Panel.Main"
+        style="@style/Text.Item.Light"
         android:text="Server Alias"
         android:id="@+id/item_title"
-        android:layout_below="@+id/item_status_value"
+        android:layout_toRightOf="@+id/item_icon"
         />
     <TextView
+            android:layout_alignLeft="@+id/item_title"
+            android:layout_below="@+id/item_title"
+            android:id="@+id/item_task_button"
+            style="@style/Text.Item.Light.Optional"
+            android:textStyle="normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20 Task(s)"/>
+
+    <TextView
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Text.Optional.Panel.Main"
+        style="@style/Text.Item.Light.Optional"
         android:text="Server details"
         android:id="@+id/item_description"
-        android:layout_below="@+id/item_title"
+        android:layout_alignLeft="@+id/item_title"
+        android:layout_below="@+id/item_task_button"
         />
 
-    <Button
-        android:layout_alignParentRight="true"
-        android:id="@+id/item_task_button"
-        android:layout_below="@+id/item_description"
-        style="@style/Button.Link.Small.Main"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="20 Task(s)"/>
+
     </RelativeLayout>
 
 
