@@ -1,17 +1,31 @@
 package team.monroe.org.meetpy;
 
+import android.animation.Animator;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.monroe.team.android.box.app.ActivitySupport;
 import org.monroe.team.android.box.app.ApplicationSupport;
 import org.monroe.team.android.box.app.ui.GenericListViewAdapter;
 import org.monroe.team.android.box.app.ui.GetViewImplementation;
+import org.monroe.team.android.box.app.ui.PushToActionAdapter;
+import org.monroe.team.android.box.app.ui.PushToListView;
+import org.monroe.team.android.box.app.ui.animation.AnimatorListenerSupport;
+import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceController;
+import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.*;
 import org.monroe.team.android.box.data.DataProvider;
+import org.monroe.team.android.box.event.Event;
+import org.monroe.team.android.box.utils.DisplayUtils;
+import org.monroe.team.corebox.log.L;
+import org.monroe.team.corebox.utils.Closure;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,16 +34,20 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import team.monroe.org.meetpy.uc.entities.TaskIdentifier;
-import team.monroe.org.meetpy.ui.TaskComponent;
+import team.monroe.org.meetpy.ui.MyListView;
 
 
 public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
 
     private GenericListViewAdapter<Representations.Server, GetViewImplementation.ViewHolder<Representations.Server>> serverListAdapter;
+    private AppearanceController bodyAC;
+    private AppearanceController subBodyAC;
+    private AppearanceController addBtnAC;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_server_dashboard);
         serverListAdapter =
                 new GenericListViewAdapter<Representations.Server, GetViewImplementation.ViewHolder<Representations.Server>>(
@@ -42,6 +60,220 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                         },R.layout.item_server
                 );
         view_list(R.id.sd_main_list).setAdapter(serverListAdapter);
+
+        bodyAC = animateAppearance(view(R.id.sd_hidden_space),
+                heightSlide(0,(int) DisplayUtils.dpToPx(200f,getResources())))
+                .showAnimation(duration_constant(200),interpreter_decelerate(0.8f))
+                .hideAnimation(duration_constant(300),interpreter_overshot())
+                .build();
+
+        subBodyAC = animateAppearance(view(R.id.sd_sub_body),
+                alpha(1f,0f))
+                .showAnimation(duration_constant(200),interpreter_decelerate(0.8f))
+                .hideAnimation(duration_constant(300),interpreter_accelerate_decelerate())
+                .hideAndGone()
+                .build();
+
+        addBtnAC = combine(animateAppearance(view(R.id.sd_add_btn),
+                        scale(1f, 0f))
+                .showAnimation(duration_constant(200), interpreter_overshot())
+                .hideAnimation(duration_constant(300), interpreter_accelerate_decelerate())
+                .hideAndGone(),
+                animateAppearance(view(R.id.sd_add_btn),
+                        rotate(360f,0f))
+                        .showAnimation(duration_constant(500),interpreter_overshot())
+                        .hideAnimation(duration_constant(200),interpreter_accelerate_decelerate())
+                        );
+
+        subBodyAC.hideWithoutAnimation();
+        addBtnAC.hideWithoutAnimation();
+        bodyAC.showWithoutAnimation();
+
+        view_text(R.id.sc_url_value).setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    apply_configuration();
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+
+        view_button(R.id.sd_add_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                apply_configuration();
+            }
+        });
+
+
+        view(R.id.sd_main_list, PushToListView.class).setPushListener(new PushToActionAdapter(DisplayUtils.dpToPx(100f, getResources())) {
+
+            private int initialHeight = 0;
+            private View animateView = view(R.id.sd_hidden_space);
+            public float lastUsedCoefficient;
+
+            @Override
+            protected void beforePush(float x, float y) {
+                initialHeight = animateView.getLayoutParams().height;
+                lastUsedCoefficient = 0f;
+                view(R.id.sd_main_list, MyListView.class).layoutUpdatingEnabled = false;
+            }
+
+            @Override
+            protected void pushInProgress(float pushCoefficient, float x, float y) {
+                if (Math.abs(lastUsedCoefficient - pushCoefficient) > 0.01) {
+                    int newHeight = (int) (initialHeight + DisplayUtils.dpToPx(80f, getResources()) * pushCoefficient);
+                    animateView.getLayoutParams().height = newHeight;
+                    animateView.requestLayout();
+                    lastUsedCoefficient = pushCoefficient;
+                }
+            }
+
+            @Override
+            protected void applyPushAction(float x, float y) {
+                if (!isSubContentVisible()) {
+                    showSubContent();
+                } else {
+                    hideSubContent();
+                }
+            }
+
+            @Override
+            protected void cancelPushAction(float pushCoefficient, float x, float y) {
+                if (!isSubContentVisible()) {
+                    hideSubContent();
+                } else {
+                    showSubContent();
+                }
+            }
+        });
+    }
+
+    private void apply_configuration() {
+
+        InputMethodManager imm = (InputMethodManager)getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view_text(R.id.sc_alias_value).getWindowToken(), 0);
+
+        final String serverName = view_text(R.id.sc_alias_value).getText().toString();
+        final String serverUrl = view_text(R.id.sc_url_value).getText().toString();
+        if (serverName.isEmpty()){
+            Toast.makeText(this, "Please specify server name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (serverUrl.isEmpty()){
+            Toast.makeText(this,"Please specify server url", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        addBtnAC.hideAndCustomize(new AppearanceController.AnimatorCustomization() {
+            @Override
+            public void customize(Animator animator) {
+                animator.addListener(new AnimatorListenerSupport(){
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        application().createServerConfiguration(serverName, serverUrl, new ApplicationSupport.ValueObserver<Representations.Server>() {
+                            @Override
+                            public void onSuccess(Representations.Server server) {
+                                hideSubContent();
+                                application().data_serverConfigurations().invalidate();
+                            }
+
+                            @Override
+                            public void onFail(int errorCode) {
+                                addBtnAC.show();
+                                String reason = "";
+                                switch (errorCode) {
+                                    case 101:
+                                        reason = "Not valid URL";
+                                        break;
+                                    case 102:
+                                        reason = "No route to host";
+                                        break;
+                                    case 103:
+                                        reason = "Can not fetch data";
+                                        break;
+                                    case 104:
+                                        reason = "Server sends bad validation data";
+                                        break;
+                                    default:
+                                        reason = "Unknown error ( code = " + errorCode + ")";
+                                        break;
+                                }
+
+                                Toast.makeText(application(), "Connection test fails. Because of: " + reason, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    private boolean isSubContentVisible() {
+        return view(R.id.sd_sub_body).getVisibility() == View.VISIBLE;
+    }
+
+    private void showSubContent() {
+        bodyAC.hideAndCustomize(new AppearanceController.AnimatorCustomization() {
+            @Override
+            public void customize(Animator animator) {
+                animator.addListener(new AnimatorListenerSupport(){
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        subBodyAC.show();
+                        addBtnAC.show();
+                        view(R.id.sd_main_list, MyListView.class).layoutUpdatingEnabled = true;
+                        view(R.id.sd_main_list, MyListView.class).requestLayout();
+                    }
+                });
+            }
+        });
+    }
+
+    private void hideSubContent() {
+        if (isSubContentVisible()){
+            addBtnAC.hide();
+            subBodyAC.hideAndCustomize(new AppearanceController.AnimatorCustomization() {
+                @Override
+                public void customize(Animator animator) {
+                    animator.addListener(new AnimatorListenerSupport(){
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            bodyAC.showAndCustomize(new AppearanceController.AnimatorCustomization() {
+                                @Override
+                                public void customize(Animator a) {
+                                    a.addListener(new AnimatorListenerSupport(){
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            view(R.id.sd_main_list, MyListView.class).layoutUpdatingEnabled = true;
+                                            view(R.id.sd_main_list, MyListView.class).requestLayout();
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }else {
+            bodyAC.showAndCustomize(new AppearanceController.AnimatorCustomization() {
+                @Override
+                public void customize(Animator animator) {
+                    animator.addListener(new AnimatorListenerSupport(){
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            view(R.id.sd_main_list, MyListView.class).layoutUpdatingEnabled = true;
+                            view(R.id.sd_main_list, MyListView.class).requestLayout();
+                        }
+                    });
+                }
+            });
+
+        }
     }
 
 
@@ -65,14 +297,25 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
     protected void onStart() {
         super.onStart();
         fetchServers();
+        Event.subscribeOnEvent(this,this,DataProvider.INVALID_DATA,new Closure<Class, Void>() {
+            @Override
+            public Void execute(Class arg) {
+                if (arg == ArrayList.class){
+                    fetchServers();
+                }
+                return null;
+            }
+        });
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        Event.unSubscribeFromEvents(this,this);
         serverListAdapter.clear();
         serverListAdapter.notifyDataSetChanged();
     }
+
 
     private class ServerViewHolder implements GetViewImplementation.ViewHolder<Representations.Server> {
 
@@ -95,12 +338,15 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
 
         @Override
         public void update(final Representations.Server server, int position) {
+            if (server == myServer){
+                refreshTimer = new Timer(true);
+                updateServerTasks(server);
+                return;
+            }
             myServer = server;
             titleText.setText(server.serverAlias);
             descriptionText.setText(server.hostDescription);
-            statusText.setText("       ");
             showTaskBtn.setVisibility(View.INVISIBLE);
-
             refreshTimer = new Timer(true);
             updateServerTasks(server);
         }
@@ -113,7 +359,6 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             }
             showTaskBtn.setOnClickListener(null);
             root.setOnClickListener(null);
-            statusText.setText("       ");
         }
 
         private void updateServerTasks(final Representations.Server server) {
@@ -167,7 +412,12 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                           updateServerTasks(assertInstance);
                           return;
                       } else {
-                          cleanup();
+                          runOnUiThread(new Runnable() {
+                              @Override
+                              public void run() {
+                                  cleanup();
+                              }
+                          });
                       }
                   }
               }, 1000);

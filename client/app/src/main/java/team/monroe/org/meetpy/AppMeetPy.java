@@ -3,7 +3,9 @@ import org.monroe.team.android.box.app.ApplicationSupport;
 import org.monroe.team.android.box.data.DataProvider;
 import org.monroe.team.android.box.json.Json;
 import org.monroe.team.android.box.services.HttpManager;
+import org.monroe.team.android.box.utils.AndroidLogImplementation;
 import org.monroe.team.corebox.app.Model;
+import org.monroe.team.corebox.log.L;
 import org.monroe.team.corebox.uc.UserCaseSupport;
 import org.monroe.team.corebox.utils.Closure;
 import org.monroe.team.corebox.utils.Lists;
@@ -36,6 +38,10 @@ import static team.monroe.org.meetpy.Representations.Server;
 public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
 
     private DataProvider<ArrayList> serverConfigurationDataProvider;
+
+    static {
+        L.setup(new AndroidLogImplementation());
+    }
 
     @Override
     protected ModelMeetPy createModel() {

@@ -1,59 +1,97 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    style="@style/Panel.Main"
-    android:paddingRight="10dp"
-    android:paddingLeft="5dp"
-    android:paddingTop="20dp"
+    style="@style/Page.Background"
+    android:orientation="vertical"
     tools:context="team.monroe.org.meetpy.ServerDashboardActivity">
 
-    <ImageView
-        android:layout_marginRight="5dp"
-        android:id="@+id/sd_top_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:src="@drawable/ic_launcher"/>
+    <RelativeLayout
+        android:id="@+id/sd_header"
+        style="@style/Page.Header">
 
-    <TextView
-        style="@style/Text.Caption.Panel.Main"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Server Dashboard"
-        android:id="@+id/sd_caption"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/sd_top_icon"/>
+        <TextView
+            style="@style/Text.Header.Caption"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Servers"
+            android:id="@+id/sd_caption"/>
 
-    <TextView
-        style="@style/Text.Optional.Panel.Main"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Here you could find all your servers"
-        android:id="@+id/sd_description"
-        android:layout_below="@+id/sd_caption"
-        android:layout_alignLeft="@+id/sd_caption"
-        android:layout_marginBottom="15dp"/>
+    </RelativeLayout>
 
-
-
-    <ListView
-        android:layout_below="@+id/sd_description"
-        android:id="@+id/sd_main_list"
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/sd_hidden_space"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="0px">
+
+        <LinearLayout
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/sd_sub_body"
+        android:layout_below="@+id/sd_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:paddingTop="10dp"
         >
 
-    </ListView>
+        <TextView
+            style="@style/Text.Background.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Server Configuration"
+            android:layout_marginBottom="10dp"/>
 
-    <ImageView
-        android:scaleType="fitXY"
+        <EditText
+            style="@style/Text.Panel.Main"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sc_alias_value"
+            android:hint="Server name"
+            android:singleLine="true"
+            android:maxLines="1"/>
+
+        <EditText
+            style="@style/Text.Panel.Main"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sc_url_value"
+            android:hint="Server url, example http://192.168.0.6:7787"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:maxLines="1"
+            />
+
+        <Button
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/sd_add_btn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/add_button"/>
+
+    </LinearLayout>
+    </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/sd_body"
+        android:layout_below="@+id/sd_header"
+        style="@style/Page.Body"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/se_shadow_image"
-        android:src="@drawable/shadow_down"
-        android:layout_below="@+id/sd_description"
-        android:layout_centerHorizontal="true" />
+        android:layout_height="fill_parent">
 
-</RelativeLayout>
+        <team.monroe.org.meetpy.ui.MyListView
+            android:id="@+id/sd_main_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            />
+
+    </RelativeLayout>
+
+
+</LinearLayout>
