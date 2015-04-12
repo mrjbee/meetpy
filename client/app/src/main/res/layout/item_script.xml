@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="20dp"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:layout_column="2"
     >
 
+    <ImageView
+        android:layout_gravity="center_vertical"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:layout_rowSpan="2"
+        android:id="@+id/item_icon"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:src="@drawable/script"
+        android:layout_margin="10dp"/>
+
     <TextView
+        android:layout_gravity="bottom"
+        android:layout_row="0"
+        android:layout_column="1"
         style="@style/Text.Item.Light"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,9 +29,12 @@
         android:id="@+id/item_value_text" />
 
     <TextView
+        android:layout_gravity="top"
+        android:layout_row="1"
+        android:layout_column="1"
         style="@style/Text.Item.Light.Optional"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Small Text"
         android:id="@+id/item_sub_value_text"/>
-</LinearLayout>
+</GridLayout>
