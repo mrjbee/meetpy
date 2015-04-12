@@ -6,20 +6,8 @@
     android:orientation="vertical"
     tools:context="team.monroe.org.meetpy.ServerDashboardActivity">
 
-    <RelativeLayout
-        android:id="@+id/header"
-        style="@style/Page.Header">
-
-        <TextView
-            style="@style/Text.Header.Caption"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="30dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MeetPY"
-            android:id="@+id/page_caption"/>
-
-    </RelativeLayout>
+    <include android:id="@+id/header"
+        layout="@layout/panel_header"/>
 
     <LinearLayout
         android:orientation="vertical"

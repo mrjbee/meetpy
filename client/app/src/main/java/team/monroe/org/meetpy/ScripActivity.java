@@ -20,6 +20,7 @@ import java.util.Map;
 import team.monroe.org.meetpy.ui.AnswerFormComponent;
 import team.monroe.org.meetpy.ui.ArgumentFormComponent;
 import team.monroe.org.meetpy.ui.CircleAppearanceRelativeLayout;
+import team.monroe.org.meetpy.ui.PanelUtils;
 import team.monroe.org.meetpy.ui.RelativeLayoutHack1;
 
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.alpha;
@@ -68,7 +69,7 @@ public class ScripActivity extends ActivitySupport<AppMeetPy> {
                 }
             }
         };
-        view_text(R.id.page_caption).setText(script.scriptTitle);
+        PanelUtils.pageHeader(view(R.id.header), script.scriptTitle, "script");
         view_text(R.id.script_description_text).setText(script.scriptDescription);
         final float maxSlideValue = DisplayUtils.dpToPx(200, getResources());
         view(R.id.slide_back_stub).setOnTouchListener(new SlideTouchGesture(maxSlideValue, SlideTouchGesture.Axis.X_RIGHT) {

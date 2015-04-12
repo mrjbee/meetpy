@@ -26,6 +26,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import team.monroe.org.meetpy.ui.CircleAppearanceRelativeLayout;
+import team.monroe.org.meetpy.ui.PanelUtils;
 import team.monroe.org.meetpy.ui.RelativeLayoutHack1;
 
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.alpha;
@@ -54,6 +55,7 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
         super.onCreate(savedInstanceState);
         crunch_requestNoAnimation();
         setContentView(R.layout.activity_server);
+
         myServer = getFromIntent("server",null);
         PointF position = getFromIntent("position" , null);
         View baseContainer= view(R.id.smoke_view);
@@ -77,7 +79,7 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
                 }
             }
         };
-        view_text(R.id.page_caption).setText(myServer.serverAlias);
+        PanelUtils.pageHeader(view(R.id.header), myServer.serverAlias, "server");
         final float maxSlideValue = DisplayUtils.dpToPx(200, getResources());
         view(R.id.slide_back_stub).setOnTouchListener(new SlideTouchGesture(maxSlideValue, SlideTouchGesture.Axis.X_RIGHT) {
             @Override
@@ -133,7 +135,7 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
         scriptsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Representations.Script script = (Representations.Script) parent.getItemAtPosition(position);
+                Representations.Script script = (Representations.Script) parent.getItemAtPosition(position-1);
                 requestScriptForm(script);
             }
         });

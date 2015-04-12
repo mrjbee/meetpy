@@ -37,6 +37,7 @@ import java.util.TimerTask;
 
 import team.monroe.org.meetpy.uc.entities.TaskIdentifier;
 import team.monroe.org.meetpy.ui.MyListView;
+import team.monroe.org.meetpy.ui.PanelUtils;
 
 
 public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
@@ -49,8 +50,8 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_server_dashboard);
+        PanelUtils.pageHeader(view(R.id.header),"MeetPY","remote runner");
         serverListAdapter =
                 new GenericListViewAdapter<Representations.Server, GetViewImplementation.ViewHolder<Representations.Server>>(
                         this,
@@ -70,7 +71,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
         view_list(R.id.main_list).setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Representations.Server server = serverListAdapter.getItem(position);
+                Representations.Server server = serverListAdapter.getItem(position-1);
                 showDetails(server,new PointF(0,0));
             }
         });
