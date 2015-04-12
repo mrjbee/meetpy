@@ -13,7 +13,6 @@ import org.monroe.team.android.box.app.ActivitySupport;
 import org.monroe.team.android.box.app.ApplicationSupport;
 import org.monroe.team.android.box.app.ui.GenericListViewAdapter;
 import org.monroe.team.android.box.app.ui.GetViewImplementation;
-import org.monroe.team.android.box.app.ui.RelativeLayoutExt;
 import org.monroe.team.android.box.app.ui.SlideTouchGesture;
 import org.monroe.team.android.box.app.ui.animation.AnimatorListenerSupport;
 import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceController;
@@ -39,7 +38,7 @@ import static org.monroe.team.android.box.app.ui.animation.apperrance.Appearance
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.xSlide;
 
 
-public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
+public class ServerActivity extends ActivitySupport<AppMeetPy> {
 
     private boolean awesomeAppearance = true;
     private AppearanceController contentAC;
@@ -54,7 +53,7 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         crunch_requestNoAnimation();
-        setContentView(R.layout.activity_server_view);
+        setContentView(R.layout.activity_server);
         myServer = getFromIntent("server",null);
         PointF position = getFromIntent("position" , null);
         View baseContainer= view(R.id.smoke_view);
@@ -107,6 +106,10 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
         }
 
         scriptsListView = view_list(R.id.main_list);
+        View header = getLayoutInflater().inflate(R.layout.header_general,null,false);
+        ((TextView)header.findViewById(R.id.item_title)).setText("Available scripts");
+        scriptsListView.addHeaderView(header,null,false);
+
         scriptListAdapter = new GenericListViewAdapter<Representations.Script, GetViewImplementation.ViewHolder<Representations.Script>>(getApplicationContext(),new GetViewImplementation.ViewHolderFactory<GetViewImplementation.ViewHolder<Representations.Script>>() {
             @Override
             public GetViewImplementation.ViewHolder<Representations.Script> create(final View convertView) {

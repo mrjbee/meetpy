@@ -46,7 +46,7 @@
             android:label="@string/title_activity_server_script" >
         </activity>
         <activity
-            android:name=".ServerViewActivity"
+            android:name=".ServerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transperent.NoAnimation"
             android:label="@string/title_activity_server_view" >

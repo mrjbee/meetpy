@@ -60,7 +60,13 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                             }
                         },R.layout.item_server
                 );
+
+        View header = getLayoutInflater().inflate(R.layout.header_general,null,false);
+        ((TextView)header.findViewById(R.id.item_title)).setText("Configured servers");
+        view_list(R.id.main_list).addHeaderView(header,null,false);
+
         view_list(R.id.main_list).setAdapter(serverListAdapter);
+
 
         bodyAC = animateAppearance(view(R.id.sd_hidden_space),
                 heightSlide(0,(int) DisplayUtils.dpToPx(200f,getResources())))
@@ -447,7 +453,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
     }
 
     private void showDetails(Representations.Server server, PointF pointF) {
-        final Intent intent = new Intent(application(), ServerViewActivity.class);
+        final Intent intent = new Intent(application(), ServerActivity.class);
         int[] root_location = new int[2];
         view(R.id.header).getLocationOnScreen(root_location);
         pointF.offset(-root_location[0], -root_location[1]);
