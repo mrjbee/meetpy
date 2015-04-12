@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import org.monroe.team.android.box.app.ActivitySupport;
+import org.monroe.team.android.box.app.ui.RelativeLayoutExt;
 import org.monroe.team.android.box.app.ui.SlideTouchGesture;
 import org.monroe.team.android.box.app.ui.animation.AnimatorListenerSupport;
 import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceController;
@@ -14,8 +15,11 @@ import org.monroe.team.android.box.app.ui.animation.apperrance.DefaultAppearance
 import org.monroe.team.android.box.utils.DisplayUtils;
 
 import team.monroe.org.meetpy.ui.CircleAppearanceRelativeLayout;
+import team.monroe.org.meetpy.ui.RelativeLayoutHack1;
 
+import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.alpha;
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.animateAppearance;
+import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.combine;
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.duration_constant;
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.interpreter_accelerate;
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.interpreter_accelerate_decelerate;
@@ -25,7 +29,6 @@ import static org.monroe.team.android.box.app.ui.animation.apperrance.Appearance
 
 public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
 
-    private AppearanceController smokeAc;
     private boolean awesomeAppearance = true;
     private AppearanceController contentAC;
     private Representations.Server myServer;
@@ -36,29 +39,40 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
         setContentView(R.layout.activity_server_view);
         myServer = getFromIntent("server",null);
         PointF position = getFromIntent("position" , null);
-        CircleAppearanceRelativeLayout baseContainer= view(R.id.smoke_view, CircleAppearanceRelativeLayout.class);
-        baseContainer.setCenter(position);
-        smokeAc = animateAppearance(baseContainer, circleGrowing())
-                .showAnimation(duration_constant(400), interpreter_accelerate(0.8f))
-                .hideAnimation(duration_constant(300), interpreter_decelerate(0.8f))
-                .build();
+        View baseContainer= view(R.id.smoke_view);
 
-        contentAC = animateAppearance(view(R.id.real_content),xSlide(0f, DisplayUtils.screenWidth(getResources())))
-                .showAnimation(duration_constant(200), interpreter_accelerate_decelerate())
-                .hideAnimation(duration_constant(200), interpreter_decelerate(0.8f))
-                .build();
+        contentAC = combine(animateAppearance(view(R.id.real_content), xSlide(0f, DisplayUtils.screenWidth(getResources())))
+                        .showAnimation(duration_constant(500), interpreter_accelerate_decelerate())
+                        .hideAnimation(duration_constant(300), interpreter_decelerate(0.8f)),
+                animateAppearance(baseContainer, alpha(1f,0f))
+                        .showAnimation(duration_constant(300), interpreter_accelerate(0.8f))
+                        .hideAnimation(duration_constant(500), interpreter_decelerate(0.8f))
+        );
 
+        RelativeLayoutHack1 shadow_dog_nail_view = view(R.id.real_content,RelativeLayoutHack1.class);
+        shadow_dog_nail_view.hackListener = new RelativeLayoutHack1.TranslationListener() {
+            @Override
+            public void onX(float value) {
+                if (value < DisplayUtils.dpToPx(4,getResources())){
+                    view(R.id.shadow_view).setVisibility(View.GONE);
+                }else{
+                    view(R.id.shadow_view).setVisibility(View.VISIBLE);
+                }
+            }
+        };
         view_text(R.id.page_caption).setText(myServer.serverAlias);
         final float maxSlideValue = DisplayUtils.dpToPx(200, getResources());
         view(R.id.slide_back_stub).setOnTouchListener(new SlideTouchGesture(maxSlideValue, SlideTouchGesture.Axis.X_RIGHT) {
             @Override
             protected void onProgress(float x, float y, float slideValue, float fraction) {
                 view(R.id.real_content).setTranslationX(maxSlideValue*fraction);
+                view(R.id.smoke_view).setAlpha(1-0.5f*fraction);
             }
 
             @Override
             protected void onCancel(float x, float y, float slideValue, float fraction) {
                 contentAC.show();
+                view(R.id.smoke_view).setAlpha(1f);
             }
 
             @Override
@@ -69,10 +83,8 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
 
 
         if(isFirstRun(savedInstanceState)){
-            smokeAc.hideWithoutAnimation();
             contentAC.hideWithoutAnimation();
         }else {
-            smokeAc.showWithoutAnimation();
             contentAC.showWithoutAnimation();
         }
 
@@ -82,17 +94,7 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
     protected void onResume() {
         super.onResume();
         if (isFirstRun() && awesomeAppearance) {
-            smokeAc.showAndCustomize(new AppearanceController.AnimatorCustomization() {
-                @Override
-                public void customize(Animator animator) {
-                    animator.addListener(new AnimatorListenerSupport() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            contentAC.show();
-                        }
-                    });
-                }
-            });
+            contentAC.show();
         }
     }
 
@@ -104,17 +106,7 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
                 animator.addListener(new AnimatorListenerSupport() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        smokeAc.hideAndCustomize(new AppearanceController.AnimatorCustomization() {
-                            @Override
-                            public void customize(Animator anim) {
-                                anim.addListener(new AnimatorListenerSupport() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        onSuperBackPressed();
-                                    }
-                                });
-                            }
-                        });
+                       onSuperBackPressed();
                     }
                 });
             }

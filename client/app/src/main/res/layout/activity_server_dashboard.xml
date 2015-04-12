@@ -7,7 +7,7 @@
     tools:context="team.monroe.org.meetpy.ServerDashboardActivity">
 
     <RelativeLayout
-        android:id="@+id/sd_header"
+        android:id="@+id/header"
         style="@style/Page.Header">
 
         <TextView
@@ -30,7 +30,7 @@
         <LinearLayout
         android:layout_gravity="center_horizontal"
         android:id="@+id/sd_sub_body"
-        android:layout_below="@+id/sd_header"
+        android:layout_below="@+id/header"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -79,14 +79,14 @@
     </LinearLayout>
     </LinearLayout>
     <RelativeLayout
-        android:id="@+id/sd_body"
-        android:layout_below="@+id/sd_header"
+        android:id="@+id/body"
+        android:layout_below="@+id/header"
         style="@style/Page.Body"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
         <team.monroe.org.meetpy.ui.MyListView
-            android:id="@+id/sd_main_list"
+            android:id="@+id/main_list"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             />

@@ -60,7 +60,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                             }
                         },R.layout.item_server
                 );
-        view_list(R.id.sd_main_list).setAdapter(serverListAdapter);
+        view_list(R.id.main_list).setAdapter(serverListAdapter);
 
         bodyAC = animateAppearance(view(R.id.sd_hidden_space),
                 heightSlide(0,(int) DisplayUtils.dpToPx(200f,getResources())))
@@ -110,7 +110,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
         });
 
 
-        view(R.id.sd_main_list, PushToListView.class).setPushListener(new PushToActionAdapter(DisplayUtils.dpToPx(100f, getResources())) {
+        view(R.id.main_list, PushToListView.class).setPushListener(new PushToActionAdapter(DisplayUtils.dpToPx(100f, getResources())) {
 
             private int initialHeight = 0;
             private View animateView = view(R.id.sd_hidden_space);
@@ -120,7 +120,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             protected void beforePush(float x, float y) {
                 initialHeight = animateView.getLayoutParams().height;
                 lastUsedCoefficient = 0f;
-                view(R.id.sd_main_list, MyListView.class).layoutUpdatingEnabled = false;
+                view(R.id.main_list, MyListView.class).layoutUpdatingEnabled = false;
             }
 
             @Override
@@ -227,8 +227,8 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                     public void onAnimationEnd(Animator animation) {
                         subBodyAC.show();
                         addBtnAC.show();
-                        view(R.id.sd_main_list, MyListView.class).layoutUpdatingEnabled = true;
-                        view(R.id.sd_main_list, MyListView.class).requestLayout();
+                        view(R.id.main_list, MyListView.class).layoutUpdatingEnabled = true;
+                        view(R.id.main_list, MyListView.class).requestLayout();
                     }
                 });
             }
@@ -250,8 +250,8 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                                     a.addListener(new AnimatorListenerSupport(){
                                         @Override
                                         public void onAnimationEnd(Animator animation) {
-                                            view(R.id.sd_main_list, MyListView.class).layoutUpdatingEnabled = true;
-                                            view(R.id.sd_main_list, MyListView.class).requestLayout();
+                                            view(R.id.main_list, MyListView.class).layoutUpdatingEnabled = true;
+                                            view(R.id.main_list, MyListView.class).requestLayout();
                                         }
                                     });
                                 }
@@ -267,8 +267,8 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                     animator.addListener(new AnimatorListenerSupport(){
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            view(R.id.sd_main_list, MyListView.class).layoutUpdatingEnabled = true;
-                            view(R.id.sd_main_list, MyListView.class).requestLayout();
+                            view(R.id.main_list, MyListView.class).layoutUpdatingEnabled = true;
+                            view(R.id.main_list, MyListView.class).requestLayout();
                         }
                     });
                 }
@@ -449,7 +449,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
     private void showDetails(Representations.Server server, PointF pointF) {
         final Intent intent = new Intent(application(), ServerViewActivity.class);
         int[] root_location = new int[2];
-        view(R.id.sd_header).getLocationOnScreen(root_location);
+        view(R.id.header).getLocationOnScreen(root_location);
         pointF.offset(-root_location[0], -root_location[1]);
         intent.putExtra("position", pointF);
         intent.putExtra("server",server);
