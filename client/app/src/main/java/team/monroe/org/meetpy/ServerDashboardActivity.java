@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,7 +67,13 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
         view_list(R.id.main_list).addHeaderView(header,null,false);
 
         view_list(R.id.main_list).setAdapter(serverListAdapter);
-
+        view_list(R.id.main_list).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Representations.Server server = serverListAdapter.getItem(position);
+                showDetails(server,new PointF(0,0));
+            }
+        });
 
         bodyAC = animateAppearance(view(R.id.sd_hidden_space),
                 heightSlide(0,(int) DisplayUtils.dpToPx(200f,getResources())))
@@ -366,7 +373,6 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                 refreshTimer.purge();
             }
             showTaskBtn.setOnClickListener(null);
-            root.setOnTouchListener(null);
         }
 
         private void updateServerTasks(final Representations.Server server) {
@@ -430,18 +436,11 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                   }
               }, 1000);
 
-              root.setOnTouchListener(!value ? null : new View.OnTouchListener() {
-                  @Override
-                  public boolean onTouch(View v, MotionEvent event) {
-                      if (event.getAction() == MotionEvent.ACTION_UP){
-                        showDetails(myServer, new PointF(event.getRawX(), event.getRawY()));
-                      }
-                      return true;
-                  }
-              });
         }
 
     }
+
+    //   showDetails(myServer, new PointF(event.getRawX(), event.getRawY()));
 
     @Override
     public void onBackPressed() {
