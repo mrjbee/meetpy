@@ -135,7 +135,7 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
         scriptsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Representations.Script script = (Representations.Script) parent.getItemAtPosition(position-1);
+                Representations.Script script = (Representations.Script) parent.getItemAtPosition(position);
                 requestScriptForm(script);
             }
         });
