@@ -22,8 +22,8 @@ import java.util.TimerTask;
 public class ServerScriptActivity extends ActivitySupport<AppMeetPy> {
 
     private String serverId;
-    private GenericListViewAdapter<Representations.Script,GetViewImplementation.ViewHolder<Representations.Script>> scriptListAdapter;
     private ViewGroup taskContentPanel;
+    private GenericListViewAdapter<Representations.Script,GetViewImplementation.ViewHolder<Representations.Script>> scriptListAdapter;
     private Timer refreshTimer;
     private ListView scriptsListView;
 

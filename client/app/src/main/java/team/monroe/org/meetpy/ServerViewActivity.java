@@ -1,11 +1,18 @@
 package team.monroe.org.meetpy;
 
 import android.animation.Animator;
+import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import org.monroe.team.android.box.app.ActivitySupport;
+import org.monroe.team.android.box.app.ApplicationSupport;
+import org.monroe.team.android.box.app.ui.GenericListViewAdapter;
+import org.monroe.team.android.box.app.ui.GetViewImplementation;
 import org.monroe.team.android.box.app.ui.RelativeLayoutExt;
 import org.monroe.team.android.box.app.ui.SlideTouchGesture;
 import org.monroe.team.android.box.app.ui.animation.AnimatorListenerSupport;
@@ -13,6 +20,11 @@ import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControl
 import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder;
 import org.monroe.team.android.box.app.ui.animation.apperrance.DefaultAppearanceController;
 import org.monroe.team.android.box.utils.DisplayUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import team.monroe.org.meetpy.ui.CircleAppearanceRelativeLayout;
 import team.monroe.org.meetpy.ui.RelativeLayoutHack1;
@@ -32,6 +44,11 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
     private boolean awesomeAppearance = true;
     private AppearanceController contentAC;
     private Representations.Server myServer;
+
+    private GenericListViewAdapter<Representations.Script,GetViewImplementation.ViewHolder<Representations.Script>> scriptListAdapter;
+    private Timer refreshTimer;
+    private ListView scriptsListView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +105,58 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
             contentAC.showWithoutAnimation();
         }
 
+        scriptsListView = view_list(R.id.main_list);
+        scriptListAdapter = new GenericListViewAdapter<Representations.Script, GetViewImplementation.ViewHolder<Representations.Script>>(getApplicationContext(),new GetViewImplementation.ViewHolderFactory<GetViewImplementation.ViewHolder<Representations.Script>>() {
+            @Override
+            public GetViewImplementation.ViewHolder<Representations.Script> create(final View convertView) {
+                return new GetViewImplementation.ViewHolder<Representations.Script>() {
+
+                    TextView valueText = (TextView) convertView.findViewById(R.id.item_value_text);
+                    TextView subValueText = (TextView) convertView.findViewById(R.id.item_sub_value_text);
+
+                    @Override
+                    public void update(Representations.Script script, int position) {
+                        valueText.setText(script.scriptTitle);
+                        subValueText.setText(script.scriptDescription);
+                    }
+
+                    @Override
+                    public void cleanup() {}
+                };
+            }
+        },R.layout.item_script);
+        scriptsListView.setAdapter(scriptListAdapter);
+        scriptsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Representations.Script script = (Representations.Script) parent.getItemAtPosition(position);
+                requestScriptForm(script);
+            }
+        });
+
+    }
+
+    private void requestScriptForm(Representations.Script script) {
+        Intent intent = new Intent(this, ScriptExecutionActivity.class);
+        intent.putExtra("script",script);
+        startActivity(intent);
+    }
+
+    private void fetchServerScripts() {
+        application().getScriptListForServer(myServer.id, new ApplicationSupport.ValueObserver<List<Representations.Script>>() {
+            @Override
+            public void onSuccess(List<Representations.Script> value) {
+                scriptListAdapter.clear();
+                scriptListAdapter.addAll(value);
+                scriptListAdapter.notifyDataSetChanged();
+                scheduleNextFetch();
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                onSuccess(Collections.EMPTY_LIST);
+            }
+        });
     }
 
     @Override
@@ -96,6 +165,30 @@ public class ServerViewActivity extends ActivitySupport<AppMeetPy> {
         if (isFirstRun() && awesomeAppearance) {
             contentAC.show();
         }
+        refreshTimer = new Timer(true);
+        fetchServerScripts();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopTimer();
+    }
+
+    private synchronized void stopTimer() {
+        refreshTimer.cancel();
+        refreshTimer.purge();
+        refreshTimer = null;
+    }
+
+    private synchronized void  scheduleNextFetch() {
+        if (refreshTimer == null)return;
+        refreshTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                fetchServerScripts();
+            }
+        }, 5000);
     }
 
     @Override
