@@ -435,7 +435,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                           });
                       }
                   }
-              }, 1000);
+              }, 5000);
 
         }
 

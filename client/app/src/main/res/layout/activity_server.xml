@@ -35,23 +35,31 @@
 
 
             <LinearLayout
-                android:orientation="vertical"
-                android:id="@+id/sd_hidden_space"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/server_description_panel"
+                android:layout_below="@+id/header"
                 android:layout_width="fill_parent"
-                android:layout_height="0px">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="40dp"
+                android:paddingRight="40dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="20dp"
+                >
 
-                <LinearLayout
-                    android:layout_gravity="center_horizontal"
-                    android:id="@+id/sd_sub_body"
-                    android:layout_below="@+id/header"
-                    android:layout_width="fill_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingLeft="40dp"
-                    android:paddingRight="40dp"
-                    android:paddingTop="10dp"
-                    >
-                </LinearLayout>
+                    android:text="Server Details"
+                    style="@style/Text.Background.Caption"/>
+
+                <TextView
+                    android:id="@+id/server_details"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="http://"
+                    style="@style/Text.Background"/>
+
             </LinearLayout>
 
             <RelativeLayout
@@ -61,21 +69,68 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-                <team.monroe.org.meetpy.ui.MyListView
+                <ListView
                     android:id="@+id/main_list"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     />
 
+                <LinearLayout
+                    android:id="@+id/slide_back_stub"
+                    android:layout_width="50dp"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:id="@+id/task_smoke_view"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:background="#b9000000"
+                    android:orientation="vertical"/>
+
+                <RelativeLayout
+                    android:id="@+id/task_side_panel"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:id="@+id/task_slide_edge"
+                        android:layout_width="50dp"
+                        android:layout_height="fill_parent"/>
+
+                    <LinearLayout
+                        android:layout_toRightOf="@+id/task_slide_edge"
+                        android:id="@+id/task_shadow_view"
+                        android:layout_width="5dp"
+                        android:layout_height="fill_parent"
+                        android:background="@drawable/shadow_hor"
+                        android:orientation="vertical"/>
+                    <ScrollView
+                        android:layout_toRightOf="@+id/task_shadow_view"
+                        android:background="#FFFFFF"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+                        <LinearLayout
+                            android:id="@+id/task_content_panel"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+                            <TextView
+                                android:layout_marginBottom="20dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Server tasks"
+                                style="@style/Text.Item.Light.Header"/>
+                        </LinearLayout>
+                    </ScrollView>
+                </RelativeLayout>
             </RelativeLayout>
 
         </LinearLayout>
     </team.monroe.org.meetpy.ui.RelativeLayoutHack1>
 
-    <LinearLayout
-        android:id="@+id/slide_back_stub"
-        android:layout_width="50dp"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" />
+
 
 </RelativeLayout>

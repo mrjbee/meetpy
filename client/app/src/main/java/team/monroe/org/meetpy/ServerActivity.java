@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,15 +21,21 @@ import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControl
 import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder;
 import org.monroe.team.android.box.app.ui.animation.apperrance.DefaultAppearanceController;
 import org.monroe.team.android.box.utils.DisplayUtils;
+import org.monroe.team.corebox.utils.Closure;
+import org.monroe.team.corebox.utils.Lists;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import team.monroe.org.meetpy.uc.entities.TaskIdentifier;
 import team.monroe.org.meetpy.ui.CircleAppearanceRelativeLayout;
 import team.monroe.org.meetpy.ui.PanelUtils;
 import team.monroe.org.meetpy.ui.RelativeLayoutHack1;
+import team.monroe.org.meetpy.ui.TaskComponent;
 
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.alpha;
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.animateAppearance;
@@ -43,11 +51,15 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
 
     private boolean awesomeAppearance = true;
     private AppearanceController contentAC;
+    private AppearanceController taskContentAC;
     private Representations.Server myServer;
 
     private GenericListViewAdapter<Representations.Script,GetViewImplementation.ViewHolder<Representations.Script>> scriptListAdapter;
-    private Timer refreshTimer;
     private ListView scriptsListView;
+    private RefreshTimer refreshScriptTimer = new RefreshTimer(5000);
+    private RefreshTimer refreshTaskTimer = new RefreshTimer(3000);
+    private List<TaskIdentifier> taskIdentifierList;
+    private List<TaskComponent> taskComponentList = new ArrayList<>();
 
 
     @Override
@@ -80,6 +92,8 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
             }
         };
         PanelUtils.pageHeader(view(R.id.header), myServer.serverAlias, "server");
+        view_text(R.id.server_details).setText(myServer.hostDescription);
+
         final float maxSlideValue = DisplayUtils.dpToPx(200, getResources());
         view(R.id.slide_back_stub).setOnTouchListener(new SlideTouchGesture(maxSlideValue, SlideTouchGesture.Axis.X_RIGHT) {
             @Override
@@ -100,12 +114,15 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
             }
         });
 
+        init_TaskSlideBar();
+
 
         if(isFirstRun(savedInstanceState)){
             contentAC.hideWithoutAnimation();
         }else {
             contentAC.showWithoutAnimation();
         }
+        taskContentAC.hideWithoutAnimation();
 
         scriptsListView = view_list(R.id.main_list);
         View header = getLayoutInflater().inflate(R.layout.header_general,null,false);
@@ -142,10 +159,130 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
 
     }
 
+    private void init_TaskSlideBar() {
+        view(R.id.task_content_panel).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        final float slideWidth = DisplayUtils.screenWidth(getResources()) - DisplayUtils.dpToPx(50, getResources());
+
+        taskContentAC = combine(animateAppearance(view(R.id.task_side_panel), xSlide(0f, slideWidth))
+                        .showAnimation(duration_constant(500), interpreter_accelerate_decelerate())
+                        .hideAnimation(duration_constant(300), interpreter_decelerate(0.8f)),
+                animateAppearance(view(R.id.task_smoke_view), alpha(1f, 0f))
+                        .showAnimation(duration_constant(300), interpreter_accelerate(0.8f))
+                        .hideAnimation(duration_constant(500), interpreter_decelerate(0.8f))
+        );
+
+        view(R.id.task_slide_edge).setOnTouchListener(new SlideTouchGesture(
+                slideWidth, SlideTouchGesture.Axis.X) {
+
+            public boolean isClosedAtStart;
+            public float startTranslationX = 0;
+            @Override
+            protected void onStart(float x, float y) {
+               isClosedAtStart = isTaskBoardClosed();
+               startTranslationX = view(R.id.task_side_panel).getTranslationX();
+            }
+
+            @Override
+            protected void onProgress(float x, float y, float slideValue, float fraction) {
+                view(R.id.task_side_panel).setTranslationX(startTranslationX-slideValue);
+                if (isClosedAtStart) {
+                    view(R.id.task_smoke_view).setAlpha(0.5f * fraction);
+                }else{
+                    view(R.id.task_smoke_view).setAlpha(1 - 0.5f * fraction);
+                }
+            }
+
+            @Override
+            protected void onCancel(float x, float y, float slideValue, float fraction) {
+                if (isClosedAtStart){
+                    taskContentAC.hide();
+                }else {
+                    taskContentAC.show();
+                }
+            }
+
+            @Override
+            protected void onApply(float x, float y, float slideValue, float fraction) {
+                if (isClosedAtStart){
+                    taskContentAC.showAndCustomize(new AppearanceController.AnimatorCustomization() {
+                        @Override
+                        public void customize(Animator animator) {
+                            animator.addListener(new AnimatorListenerSupport(){
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    fetchServerTasks(true);
+                                }
+                            });
+                        }
+                    });
+                }else {
+                    taskContentAC.hide();
+                }
+            }
+        });
+    }
+
+    private boolean isTaskBoardClosed() {
+        return view(R.id.task_side_panel).getTranslationX() != 0;
+    }
+
     private void requestScriptForm(Representations.Script script) {
         Intent intent = new Intent(this, ScripActivity.class);
         intent.putExtra("script",script);
         startActivity(intent);
+    }
+
+
+    private void fetchServerTasks(final boolean forced) {
+        application().getServerTasks(myServer.id,new ApplicationSupport.ValueObserver<List<TaskIdentifier>>() {
+            @Override
+            public void onSuccess(List<TaskIdentifier> tasksList) {
+                if (forced || !isTaskBoardClosed()) {
+                    taskIdentifierList = tasksList;
+                    final ViewGroup taskContentPanel = view(R.id.task_content_panel, ViewGroup.class);
+                    Lists.iterateAndRemove(taskComponentList, new Closure<Iterator<TaskComponent>, Boolean>() {
+                        @Override
+                        public Boolean execute(Iterator<TaskComponent> iterator) {
+                            TaskComponent component = iterator.next();
+                            if (taskIdentifierList.indexOf(component.getId()) == -1) {
+                                component.onDestroy();
+                                taskContentPanel.removeView(component.getRootView());
+                                iterator.remove();
+                            } else {
+                                taskIdentifierList.remove(component.getId());
+                            }
+                            return false;
+                        }
+                    });
+
+                    for (TaskIdentifier taskIdentifier : taskIdentifierList) {
+                        TaskComponent component = new TaskComponent(taskIdentifier, application());
+                        View taskView = component.createView(getLayoutInflater(), taskContentPanel);
+                        taskContentPanel.addView(taskView);
+                        component.onCreate();
+                        taskComponentList.add(component);
+                    }
+                }
+                if (!forced) {
+                    refreshTaskTimer.schedule(new Runnable() {
+                        @Override
+                        public void run() {
+                            fetchServerTasks(false);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                onSuccess(Collections.EMPTY_LIST);
+            }
+        });
     }
 
     private void fetchServerScripts() {
@@ -155,7 +292,12 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
                 scriptListAdapter.clear();
                 scriptListAdapter.addAll(value);
                 scriptListAdapter.notifyDataSetChanged();
-                scheduleNextFetch();
+                refreshScriptTimer.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        fetchServerScripts();
+                    }
+                });
             }
 
             @Override
@@ -171,31 +313,21 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
         if (isFirstRun() && awesomeAppearance) {
             contentAC.show();
         }
-        refreshTimer = new Timer(true);
+        refreshTaskTimer.activate();
+        refreshScriptTimer.activate();
         fetchServerScripts();
+        fetchServerTasks(false);
     }
+
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopTimer();
+        refreshTaskTimer.deactivate();
+        refreshScriptTimer.deactivate();
     }
 
-    private synchronized void stopTimer() {
-        refreshTimer.cancel();
-        refreshTimer.purge();
-        refreshTimer = null;
-    }
 
-    private synchronized void  scheduleNextFetch() {
-        if (refreshTimer == null)return;
-        refreshTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                fetchServerScripts();
-            }
-        }, 5000);
-    }
 
     @Override
     public void onBackPressed() {
@@ -206,7 +338,7 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
                 animator.addListener(new AnimatorListenerSupport() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                       onSuperBackPressed();
+                        onSuperBackPressed();
                     }
                 });
             }
@@ -250,5 +382,40 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
                 };
             }
         };
+    }
+
+    public static class RefreshTimer {
+
+        private Timer timer;
+        private final long refreshTime;
+
+        public RefreshTimer(long refreshTime) {
+            this.refreshTime = refreshTime;
+        }
+
+        public synchronized void activate(){
+            timer = new Timer();
+        }
+
+        public synchronized void deactivate(){
+            if (isDeactivated()) return;
+            timer.cancel();
+            timer.purge();
+            timer = null;
+        }
+
+        public synchronized void schedule(final Runnable task){
+            if (isDeactivated()) return;
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    task.run();
+                }
+            }, refreshTime);
+        }
+
+        public boolean isDeactivated() {
+            return timer == null;
+        }
     }
 }
