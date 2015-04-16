@@ -243,30 +243,7 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
             @Override
             public void onSuccess(List<TaskIdentifier> tasksList) {
                 if (forced || !isTaskBoardClosed()) {
-                    taskIdentifierList = tasksList;
-                    final ViewGroup taskContentPanel = view(R.id.task_content_panel, ViewGroup.class);
-                    Lists.iterateAndRemove(taskComponentList, new Closure<Iterator<TaskComponent>, Boolean>() {
-                        @Override
-                        public Boolean execute(Iterator<TaskComponent> iterator) {
-                            TaskComponent component = iterator.next();
-                            if (taskIdentifierList.indexOf(component.getId()) == -1) {
-                                component.onDestroy();
-                                taskContentPanel.removeView(component.getRootView());
-                                iterator.remove();
-                            } else {
-                                taskIdentifierList.remove(component.getId());
-                            }
-                            return false;
-                        }
-                    });
-
-                    for (TaskIdentifier taskIdentifier : taskIdentifierList) {
-                        TaskComponent component = new TaskComponent(taskIdentifier, application());
-                        View taskView = component.createView(getLayoutInflater(), taskContentPanel);
-                        taskContentPanel.addView(taskView);
-                        component.onCreate();
-                        taskComponentList.add(component);
-                    }
+                    updateTasksView(tasksList);
                 }
                 if (!forced) {
                     refreshTaskTimer.schedule(new Runnable() {
@@ -283,6 +260,33 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
                 onSuccess(Collections.EMPTY_LIST);
             }
         });
+    }
+
+    private void updateTasksView(List<TaskIdentifier> tasksList) {
+        taskIdentifierList = tasksList;
+        final ViewGroup taskContentPanel = view(R.id.task_content_panel, ViewGroup.class);
+        Lists.iterateAndRemove(taskComponentList, new Closure<Iterator<TaskComponent>, Boolean>() {
+            @Override
+            public Boolean execute(Iterator<TaskComponent> iterator) {
+                TaskComponent component = iterator.next();
+                if (taskIdentifierList.indexOf(component.getId()) == -1) {
+                    component.onDestroy();
+                    taskContentPanel.removeView(component.getRootView());
+                    iterator.remove();
+                } else {
+                    taskIdentifierList.remove(component.getId());
+                }
+                return false;
+            }
+        });
+
+        for (TaskIdentifier taskIdentifier : taskIdentifierList) {
+            TaskComponent component = new TaskComponent(taskIdentifier, application());
+            View taskView = component.createView(getLayoutInflater(), taskContentPanel);
+            taskContentPanel.addView(taskView);
+            component.onCreate();
+            taskComponentList.add(component);
+        }
     }
 
     private void fetchServerScripts() {
@@ -327,7 +331,12 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
         refreshScriptTimer.deactivate();
     }
 
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        updateTasksView(Collections.EMPTY_LIST);
+        taskContentAC.hide();
+    }
 
     @Override
     public void onBackPressed() {
