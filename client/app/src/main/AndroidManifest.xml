@@ -9,23 +9,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name=".ScriptSelectionActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".ServerConfigurationActivity"
-            android:label="@string/title_activity_server_configuration"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" >
-        </activity>
-        <activity
-            android:name=".ScriptExecutionActivity"
-            android:label="@string/title_activity_script_execution"
-            android:screenOrientation="portrait" >
-        </activity>
+        android:theme="@style/AppTheme">
         <activity
             android:name=".ServerDashboardActivity"
             android:label="@string/app_name"
@@ -35,15 +19,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".ServerTaskActivity"
-            android:label="@string/title_activity_server_task"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".ServerScriptActivity"
-            android:label="@string/title_activity_server_script" >
         </activity>
         <activity
             android:name=".ServerActivity"

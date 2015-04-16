@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -339,7 +338,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
         private final View root;
         private Representations.Server myServer;
         private Timer refreshTimer;
-        private TextView showTaskBtn;
+        private TextView taskText;
         private ImageView imageView;
 
 
@@ -347,7 +346,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             root = rootView;
             titleText = (TextView) rootView.findViewById(R.id.item_title);
             descriptionText = (TextView) rootView.findViewById(R.id.item_description);
-            showTaskBtn = (TextView) rootView.findViewById(R.id.item_task_button);
+            taskText = (TextView) rootView.findViewById(R.id.item_task_button);
             imageView = (ImageView) rootView.findViewById(R.id.item_icon);
         }
 
@@ -361,7 +360,6 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
             myServer = server;
             titleText.setText(server.serverAlias);
             descriptionText.setText(server.hostDescription);
-            showTaskBtn.setVisibility(View.INVISIBLE);
             refreshTimer = new Timer(true);
             imageView.setImageResource(R.drawable.comp_offline);
             updateServerTasks(server);
@@ -373,7 +371,6 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                 refreshTimer.cancel();
                 refreshTimer.purge();
             }
-            showTaskBtn.setOnClickListener(null);
         }
 
         private void updateServerTasks(final Representations.Server server) {
@@ -382,7 +379,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                 @Override
                 public void onSuccess(List<TaskIdentifier> taskIdentifierList) {
                     if (server == myServer) {
-                        renewTaskComponents(taskIdentifierList);
+                        taskText.setText(taskIdentifierList.size()+" task(s)");
                         updateServerStatusAndRequest(true, server);
                     }
                 }
@@ -390,29 +387,12 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
                 @Override
                 public void onFail(int errorCode) {
                     if (server == myServer) {
-                        renewTaskComponents(Collections.EMPTY_LIST);
+                        taskText.setText("NaN task(s)");
                         updateServerStatusAndRequest(false, server);
                     }
                 }
 
             });
-        }
-
-        private void renewTaskComponents(final List<TaskIdentifier> taskIdentifierList) {
-            showTaskBtn.setText(taskIdentifierList.size()+" task(s)");
-            showTaskBtn.setVisibility(taskIdentifierList.isEmpty()?View.INVISIBLE:View.VISIBLE);
-            if (taskIdentifierList.isEmpty()){
-                showTaskBtn.setOnClickListener(null);
-            }else{
-                showTaskBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(application(), ServerTaskActivity.class);
-                        intent.putExtra("server_id", myServer.id);
-                        startActivity(intent);
-                    }
-                });
-            }
         }
 
         private void updateServerStatusAndRequest(Boolean value, final Representations.Server assertInstance) {
