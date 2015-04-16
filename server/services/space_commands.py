@@ -1,24 +1,26 @@
 import json
 import os, traceback, uuid
 from common.context import Service
-from common import utils
 from common.utils import log_execution
-from commands import _common
+import common.command
 from services import space_threads
+import space_settings
 
 
 def _build_command_definition(command):
     assert isinstance(command, CommandMethods)
-    builder = _common.SignatureBuilder()
+    builder = common.command.SignatureBuilder()
     command.method_define(builder)
     return builder
 
 
 class CommandManger (Service):
 
-    def __init__(self):
+    def __init__(self, sm):
         super(CommandManger, self).__init__(CommandManger)
         self._command_map = {}
+        self.sm = sm
+        assert isinstance(self.sm, space_settings.SettingManager)
 
     def init(self):
         self._loadCommands()
@@ -29,14 +31,14 @@ class CommandManger (Service):
         assert isinstance(command, CommandMethods)
         answer = CommandExecutionResult()
         try:
-            context = _common.CommandExecutionContext()
+            context = common.command.CommandExecutionContext()
             command.method_execute(context, arguments, log_execution())
             log.info("Command executed: %s", command_id)
             answer.is_success = True
             answer.results = context.result_as_map()
             # Deals with tasks
             for task in context._tasks:
-                answer.sub_execution_list.append(CommandTaskExecution(_common.TaskExecutionContext(), task))
+                answer.sub_execution_list.append(CommandTaskExecution(common.command.TaskExecutionContext(), task))
 
         except Exception as error:
             log_execution().exception("Command execution failed: %s", command_id)
@@ -66,11 +68,16 @@ class CommandManger (Service):
         return answer
 
     def _loadCommands(self):
-        commands_files = os.listdir("commands")
+        sm = self.sm
+        assert isinstance(sm, space_settings.SettingManager)
+        command_dir = sm.command_dir()
+        if not os.path.exists(command_dir):
+            return
+        commands_files = os.listdir(command_dir)
         for command in commands_files:
             if command.startswith("_") is False and command.endswith(".py"):
                 name = os.path.splitext(command)[0]
-                module = __import__('commands.'+name, fromlist=['define, execute, async'])
+                module = __import__(command_dir+'.'+name, fromlist=['define, execute, async'])
                 instance = CommandMethods()
                 instance.method_define = getattr(module, 'define')
                 instance.method_execute = getattr(module, 'execute')
@@ -102,12 +109,13 @@ class CommandMethods(object):
         self.method_define = None
         self.method_execute = None
 
+
 class CommandTaskExecution(space_threads.ThreadRunnable):
 
     def __init__(self, context, task):
         super(CommandTaskExecution, self).__init__()
-        assert isinstance(context, _common.TaskExecutionContext)
-        assert isinstance(task, _common.Task)
+        assert isinstance(context, common.command.TaskExecutionContext)
+        assert isinstance(task, common.command.Task)
         self._context = context
         self._task = task
         self.persist_dir = None

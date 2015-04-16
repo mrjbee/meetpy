@@ -57,3 +57,7 @@ class SettingManager(Service):
         if not os.path.exists(path):
              os.makedirs(path)
         return path
+
+    def command_dir(self):
+        path = self._model["command_dir"]
+        return path

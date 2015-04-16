@@ -1,7 +1,4 @@
 import uuid
-from common import utils
-from common.utils import log_execution
-from services import space_threads
 
 
 def _to_json_list(list):

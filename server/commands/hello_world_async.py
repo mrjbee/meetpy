@@ -1,9 +1,10 @@
 import time
-import _common
+
+from common import command
 
 
 def define(signature_builder):
-        assert isinstance(signature_builder, _common.SignatureBuilder)
+        assert isinstance(signature_builder, command.SignatureBuilder)
         signature_builder\
             .title("Greetings Async")\
             .about("Hello World Greeting test script in separate thread")\
@@ -13,13 +14,13 @@ def define(signature_builder):
 
 def execute(context, args_map, log):
         log.info("Hello "+args_map["name"]+" ! I`m pybee server")
-        assert isinstance(context, _common.CommandExecutionContext)
+        assert isinstance(context, command.CommandExecutionContext)
         hello_task = SayHelloTask(args_map["name"])
         context.message("Before anything", "Hey dude,"+args_map["name"]+"! I`ll will say hello later in a task")
         context.sub_task(hello_task)
 
 
-class SayHelloTask (_common.Task):
+class SayHelloTask (command.Task):
 
     def __init__(self, to_name):
         super(SayHelloTask, self).__init__()
@@ -31,7 +32,7 @@ class SayHelloTask (_common.Task):
 
     def execute(self, context, log):
         log.info("Hello "+self._name+" ! I`m pybee server")
-        assert isinstance(context, _common.TaskExecutionContext)
+        assert isinstance(context, command.TaskExecutionContext)
         context.progress(0.1)
         time.sleep(15)
         context.message("Say Hello", "Hello [before sleep] "+self._name+" ! I`m pybee server")

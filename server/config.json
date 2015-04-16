@@ -6,7 +6,7 @@
   "log_execution_level":"INFO",
   "log_console_level":"WARN",
   "log_console_enabled": true,
-
+  "command_dir":"commands",
   "task_dir":".tasks",
   "places":[]
 }

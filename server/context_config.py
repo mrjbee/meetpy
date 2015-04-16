@@ -12,7 +12,7 @@ class ServerContext(Context):
     def configure(self):
         self.required_service(SM)
         self.required_service(space_threads.ThreadManager())
-        self.required_service(space_commands.CommandManger())
+        self.required_service(space_commands.CommandManger(SM))
         self.required_feature(user_cases_fs.GetAvailablePlaces())
         self.required_feature(user_cases_fs.ExploreFiles())
         self.required_feature(user_cases_commands.ListCommands())

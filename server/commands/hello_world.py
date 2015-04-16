@@ -1,8 +1,8 @@
-import _common
+from common import command
 
 
 def define(signature_builder):
-        assert isinstance(signature_builder, _common.SignatureBuilder)
+        assert isinstance(signature_builder, command.SignatureBuilder)
         signature_builder\
             .title("Greetings")\
             .about("Hello World Greeting test script")\
@@ -12,6 +12,6 @@ def define(signature_builder):
 
 def execute(context, args_map, log):
         log.info("Hello "+args_map["name"]+" ! I`m pybee server")
-        assert isinstance(context, _common.ExecutionContext)
+        assert isinstance(context, command.ExecutionContext)
         context.message("Say Hello", "Hello "+args_map["name"]+" ! I`m pybee server")
         # context.stop("Test stop functionality")
