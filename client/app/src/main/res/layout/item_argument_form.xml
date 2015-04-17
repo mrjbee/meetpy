@@ -30,6 +30,7 @@
         android:text="Submit"/>
 
     <ProgressBar
+        android:layout_centerHorizontal="true"
         android:layout_below="@id/form_child_content_panel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

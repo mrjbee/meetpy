@@ -72,8 +72,16 @@
                 </LinearLayout>
             </ScrollView>
 
-
         </LinearLayout>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/script_progress"
+            android:layout_centerInParent="true"/>
+
+
     </team.monroe.org.meetpy.ui.RelativeLayoutHack1>
 
     <LinearLayout

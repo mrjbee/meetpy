@@ -3,6 +3,8 @@ package team.monroe.org.meetpy;
 import org.monroe.team.android.box.app.ApplicationSupport;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import team.monroe.org.meetpy.uc.entities.ServerConfiguration;
 
@@ -45,6 +47,16 @@ final public class Representations {
         }
     }
 
+    public static class Scripts implements Serializable{
+
+        public final String serverId;
+        public final List<Script> scriptList;
+
+        public Scripts(String serverId, List<Script> scriptList) {
+            this.serverId = serverId;
+            this.scriptList = scriptList;
+        }
+    }
 
 
 }

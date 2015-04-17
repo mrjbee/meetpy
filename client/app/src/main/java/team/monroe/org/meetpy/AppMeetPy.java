@@ -1,9 +1,11 @@
 package team.monroe.org.meetpy;
 import org.monroe.team.android.box.app.ApplicationSupport;
 import org.monroe.team.android.box.data.DataProvider;
+import org.monroe.team.android.box.data.RefreshableCachedData;
 import org.monroe.team.android.box.json.Json;
 import org.monroe.team.android.box.services.HttpManager;
 import org.monroe.team.android.box.utils.AndroidLogImplementation;
+import org.monroe.team.android.box.utils.SerializationMap;
 import org.monroe.team.corebox.app.Model;
 import org.monroe.team.corebox.log.L;
 import org.monroe.team.corebox.uc.UserCaseSupport;
@@ -11,6 +13,7 @@ import org.monroe.team.corebox.utils.Closure;
 import org.monroe.team.corebox.utils.Lists;
 
 import java.io.IOException;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,7 @@ import static team.monroe.org.meetpy.Representations.Server;
 public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
 
     private DataProvider<ArrayList> serverConfigurationDataProvider;
+    private final SerializationMap<String, Representations.Scripts> scriptsCache = new SerializationMap<>("scripts.map",this);
 
     static {
         L.setup(new AndroidLogImplementation());
@@ -118,5 +122,31 @@ public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
 
     public void getServerTasks(String serverId, ValueObserver<List<TaskIdentifier>> observer){
         fetchValue(GetServerTasks.class,serverId,new NoOpValueAdapter<List<TaskIdentifier>>(),observer);
+    }
+
+    public RefreshableCachedData<Representations.Scripts> data_scriptsFor(final String serverId) {
+        return new RefreshableCachedData<>(new RefreshableCachedData.CachedData<Representations.Scripts>(Representations.Scripts.class,model()) {
+
+            @Override
+            protected Representations.Scripts provideDataAndCache() {
+                List<Script> scriptList = model().execute(GetScriptList.class,serverId);
+                List<Representations.Script> scripts = Lists.collect(scriptList, new Closure<Script, Representations.Script>() {
+                    @Override
+                    public Representations.Script execute(Script arg) {
+                        return new Representations.Script(arg.id.scriptId, arg.id.serverId, arg.title ,arg.description);
+                    }
+                });
+                Representations.Scripts answer = new Representations.Scripts(serverId, scripts);
+                //cache here
+                scriptsCache.put(answer.serverId,answer);
+                return answer;
+            }
+
+            @Override
+            protected Representations.Scripts provideDataFromCache() {
+                return scriptsCache.get(serverId);
+            }
+
+        },5000);
     }
 }

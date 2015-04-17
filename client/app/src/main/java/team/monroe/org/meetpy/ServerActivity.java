@@ -20,6 +20,7 @@ import org.monroe.team.android.box.app.ui.animation.AnimatorListenerSupport;
 import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceController;
 import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder;
 import org.monroe.team.android.box.app.ui.animation.apperrance.DefaultAppearanceController;
+import org.monroe.team.android.box.data.RefreshableCachedData;
 import org.monroe.team.android.box.utils.DisplayUtils;
 import org.monroe.team.corebox.utils.Closure;
 import org.monroe.team.corebox.utils.Lists;
@@ -56,10 +57,12 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
 
     private GenericListViewAdapter<Representations.Script,GetViewImplementation.ViewHolder<Representations.Script>> scriptListAdapter;
     private ListView scriptsListView;
-    private RefreshTimer refreshScriptTimer = new RefreshTimer(5000);
+
+
     private RefreshTimer refreshTaskTimer = new RefreshTimer(3000);
     private List<TaskIdentifier> taskIdentifierList;
     private List<TaskComponent> taskComponentList = new ArrayList<>();
+    private RefreshableCachedData<Representations.Scripts> cashedScriptData;
 
 
     @Override
@@ -157,6 +160,15 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
             }
         });
 
+        cashedScriptData = application().data_scriptsFor(myServer.id);
+        cashedScriptData.setObserver(new RefreshableCachedData.DataObserver<Representations.Scripts>() {
+            @Override
+            public void onData(Representations.Scripts data) {
+                scriptListAdapter.clear();
+                scriptListAdapter.addAll(data.scriptList);
+                scriptListAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private void init_TaskSlideBar() {
@@ -289,28 +301,6 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
         }
     }
 
-    private void fetchServerScripts() {
-        application().getScriptListForServer(myServer.id, new ApplicationSupport.ValueObserver<List<Representations.Script>>() {
-            @Override
-            public void onSuccess(List<Representations.Script> value) {
-                scriptListAdapter.clear();
-                scriptListAdapter.addAll(value);
-                scriptListAdapter.notifyDataSetChanged();
-                refreshScriptTimer.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        fetchServerScripts();
-                    }
-                });
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-                onSuccess(Collections.EMPTY_LIST);
-            }
-        });
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -318,8 +308,7 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
             contentAC.show();
         }
         refreshTaskTimer.activate();
-        refreshScriptTimer.activate();
-        fetchServerScripts();
+        cashedScriptData.activateRefreshing();
         fetchServerTasks(false);
     }
 
@@ -328,7 +317,7 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
     protected void onPause() {
         super.onPause();
         refreshTaskTimer.deactivate();
-        refreshScriptTimer.deactivate();
+        cashedScriptData.deactivateRefreshing();
     }
 
     @Override

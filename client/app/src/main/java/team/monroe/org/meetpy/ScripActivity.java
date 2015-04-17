@@ -100,16 +100,27 @@ public class ScripActivity extends ActivitySupport<AppMeetPy> {
         fetchScriptSignature();
     }
 
+    int script_signature_fetching_errors = 0;
+
     private void fetchScriptSignature() {
+        view(R.id.script_progress).setVisibility(View.VISIBLE);
         application().getScriptSignature(script, new ApplicationSupport.ValueObserver<ArgumentFormComponent>() {
+
             @Override
             public void onSuccess(ArgumentFormComponent argFormView) {
                 installArgumentForm(argFormView);
+                view(R.id.script_progress).setVisibility(View.GONE);
             }
 
             @Override
             public void onFail(int errorCode) {
-                toast_UnsupportedErrorCode(errorCode);
+                view(R.id.script_progress).setVisibility(View.GONE);
+                errorCode++;
+                if (script_signature_fetching_errors >3) {
+                    toast_UnsupportedErrorCode(errorCode);
+                }else {
+                    fetchScriptSignature();
+                }
             }
         });
     }
