@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/panel_round_whitest_2"
-    android:layout_marginRight="20dp"
+    android:layout_marginRight="10dp"
     android:layout_marginLeft="10dp"
     android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
@@ -13,24 +14,23 @@
     <LinearLayout
         android:layout_alignParentTop="true"
         android:id="@+id/form_child_content_panel"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
     </LinearLayout>
 
     <Button
+        android:layout_centerHorizontal="true"
         android:id="@+id/form_submit_button"
         style="@style/Button.Link.Main"
         android:layout_below="@id/form_child_content_panel"
-        android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Submit"/>
 
     <ProgressBar
         android:layout_below="@id/form_child_content_panel"
-        android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/form_progress"

@@ -86,10 +86,10 @@ public class AppMeetPy extends ApplicationSupport<ModelMeetPy> {
     }
 
     public void getScriptSignature(Representations.Script script, ValueObserver<ArgumentFormComponent> observer) {
-        fetchValue(GetScriptSignature.class,new ScriptIdentifier(script.serverId,script.id), new ValueAdapter<List<ScriptArgument>, ArgumentFormComponent>() {
+        fetchValue(GetScriptSignature.class,new ScriptIdentifier(script.serverId,script.id), new ValueAdapter<GetScriptSignature.ScriptSignature, ArgumentFormComponent>() {
             @Override
-            public ArgumentFormComponent adapt(List<ScriptArgument> arguments) {
-                return ArgumentFormComponent.createFor(arguments);
+            public ArgumentFormComponent adapt(GetScriptSignature.ScriptSignature scriptSignature) {
+                return ArgumentFormComponent.createFor(scriptSignature);
             }
         }, observer);
     }
