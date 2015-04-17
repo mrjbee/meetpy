@@ -115,7 +115,7 @@ public class ScripActivity extends ActivitySupport<AppMeetPy> {
             @Override
             public void onFail(int errorCode) {
                 view(R.id.script_progress).setVisibility(View.GONE);
-                errorCode++;
+                script_signature_fetching_errors++;
                 if (script_signature_fetching_errors >3) {
                     toast_UnsupportedErrorCode(errorCode);
                 }else {
