@@ -76,6 +76,7 @@ class CommandDetails(ActionHandler):
         command_map = {"id": command_detail.id,
                        "title": command_detail.title,
                        "about": command_detail.about,
+                       "actionName": command_detail.actionName,
                        "args": command_detail.arguments}
         response = HandlerResponse()
         response.write_json(command_map)

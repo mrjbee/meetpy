@@ -47,6 +47,7 @@ class SignatureBuilder(object):
         super(SignatureBuilder, self).__init__()
         self._title = "Unknown"
         self._about = "Unknown"
+        self._action_name = None
         self._argument_builder = ArgumentBuilder()
 
     def title(self, value_string):
@@ -55,6 +56,10 @@ class SignatureBuilder(object):
 
     def about(self, value_string):
         self._about = value_string
+        return self
+
+    def action(self, value_string):
+        self._action_name = value_string
         return self
 
     def args(self):

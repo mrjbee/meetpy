@@ -12,6 +12,7 @@ def _command_map_to_object(command_map):
     comm.id = command_map["id"]
     comm.title = command_map["title"]
     comm.about = command_map["about"]
+    comm.actionName = command_map["action_name"]
     return comm
 
 

@@ -58,6 +58,7 @@ class CommandManger (Service):
         return {"id": command_name,
                 "title": definition._title,
                 "about": definition._about,
+                "action_name": definition._action_name,
                 "args": definition.args_as_map()}
 
     def commands(self):
