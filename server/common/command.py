@@ -9,16 +9,18 @@ def _to_json_list(list):
 
 
 class _ArgumentDefinition(object):
-    def __init__(self, arg_type, required, arg_id, arg_about):
+    def __init__(self, arg_type, required, arg_id, arg_title, arg_about):
         super(_ArgumentDefinition, self).__init__()
         self._required = required
         self._type = arg_type
         self._id = arg_id
         self._about = arg_about
+        self._title = arg_title
 
     def as_map(self):
         definition_map = {
             "id": self._id,
+            "title": self._title,
             "about": self._about,
             "required": self._required,
             "type": self._type}
@@ -30,16 +32,16 @@ class _ArgumentDefinition(object):
 
 
 class TextArgumentDefinition(_ArgumentDefinition):
-    def __init__(self, required, arg_id, arg_about):
-        super(TextArgumentDefinition, self).__init__("text", required, arg_id, arg_about)
-        self._len = -1
+    def __init__(self, required, arg_id, arg_title, arg_about):
+        super(TextArgumentDefinition, self).__init__("text", required, arg_id, arg_title, arg_about)
+        self._example = None
 
-    def max_len(self, len_value):
-        self._len = len_value
+    def example(self, example):
+        self._example = example
         return self
 
     def define_map(self, def_map):
-        def_map["len"] = self._len
+        def_map["example"] = self._example
 
 
 class SignatureBuilder(object):
@@ -75,9 +77,16 @@ class ArgumentBuilder(object):
         self._arg_lst = []
 
     def text_arg(self, required, name, about):
-        arg_definition = TextArgumentDefinition(required, name, about)
+        arg_definition = TextArgumentDefinition(required, name, name, about)
         self._arg_lst.append(arg_definition)
         return arg_definition
+
+    def arg_text(self, required, name, title, about, example=None):
+        arg_definition = TextArgumentDefinition(required, name, title, about)
+        arg_definition.example(example)
+        self._arg_lst.append(arg_definition)
+        return arg_definition
+
 
 
 class _Result(object):
