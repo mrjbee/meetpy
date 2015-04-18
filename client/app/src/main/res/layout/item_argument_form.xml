@@ -14,7 +14,7 @@
     <LinearLayout
         android:layout_alignParentTop="true"
         android:id="@+id/form_child_content_panel"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 

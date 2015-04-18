@@ -1,5 +1,10 @@
 package team.monroe.org.meetpy.ui;
 
+import android.graphics.Typeface;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.SpannedString;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -55,7 +60,19 @@ public abstract class ArgumentComponent<ArgumentType extends ScriptArgument> {
         public void onCreate(View view) {
             valueEdit = view(view, R.id.component_value_edit, EditText.class);
             if (arg.example != null && !arg.example.isEmpty()){
-                valueEdit.setHint(arg.title + " example <i>"+arg.example+"</i>");
+                String text = arg.title + ", e.g. "+arg.example;
+                SpannableString spannableString = new SpannableString(text);
+
+                /*
+                int startIndex = arg.title.length();
+                int endIndex = text.length();
+                spannableString.setSpan(new StyleSpan(Typeface.ITALIC), startIndex,endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                */
+                int startIndex = text.length()- arg.example.length();
+                int endIndex = startIndex + arg.example.length();
+                spannableString.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), startIndex,endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                valueEdit.setHint(spannableString);
             }else{
                 valueEdit.setHint(arg.title);
             }

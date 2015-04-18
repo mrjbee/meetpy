@@ -54,12 +54,12 @@
                         android:text="Script Description"/>
                     <TextView
                         android:id="@+id/script_description_text"
-                        android:layout_marginLeft="40dp"
+                        android:layout_marginLeft="30dp"
                         android:layout_marginRight="40dp"
                         android:layout_marginBottom="20dp"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        style="@style/Text.Background"
+                        style="@style/Text.Background.Hint"
                         android:text="Script Description"/>
                     <LinearLayout
                         android:paddingBottom="10dp"
