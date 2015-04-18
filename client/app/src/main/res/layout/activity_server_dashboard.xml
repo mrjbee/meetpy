@@ -40,6 +40,7 @@
         android:layout_height="fill_parent">
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/shadow_view"
             android:layout_width="5dp"
             android:layout_height="fill_parent"

@@ -53,7 +53,7 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_dashboard);
-        PanelUtils.pageHeader(view(R.id.header),"MeetPY","remote runner");
+        PanelUtils.pageHeader(view(R.id.header),"Meet.PY","remote runner");
 
 
         contentAC = animateAppearance(view(R.id.real_content), xSlide(0f, DisplayUtils.screenWidth(getResources())))
