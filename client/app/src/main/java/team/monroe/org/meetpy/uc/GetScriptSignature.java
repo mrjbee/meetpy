@@ -76,11 +76,28 @@ public class GetScriptSignature extends UserCaseSupport<ScriptIdentifier,GetScri
                         argId,argType,argTitle,argAbout,argRequired,
                         argumentJson.value("selected", Boolean.TRUE)
                 );
+            case choice:
+                return new ScriptArgument.ChoiceArgument(
+                        argId,argType,argTitle,argAbout,argRequired,
+                        asChoiceList(argumentJson.asArray("choices"))
+                );
             default:
                 return new ScriptArgument.UnknownTypeArgument(
                         argId,argType,argTitle,argAbout,argRequired
                 );
         }
+    }
+
+    private List<ScriptArgument.ChoiceArgument.Choice> asChoiceList(Json.JsonArray choices) {
+        List<ScriptArgument.ChoiceArgument.Choice> answer = new ArrayList<>();
+        for (int i=0; choices.exists(i); i++){
+            answer.add(new ScriptArgument.ChoiceArgument.Choice(
+                    choices.asObject(i).value("title",""),
+                    choices.asObject(i).value("description",""),
+                    choices.asObject(i).value("title","value")
+            ));
+        }
+        return answer;
     }
 
     public static class ScriptSignature{

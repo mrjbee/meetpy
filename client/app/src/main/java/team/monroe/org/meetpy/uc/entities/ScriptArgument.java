@@ -1,5 +1,8 @@
 package team.monroe.org.meetpy.uc.entities;
 
+import java.util.Collections;
+import java.util.List;
+
 public abstract class ScriptArgument {
 
     public final String id;
@@ -17,7 +20,7 @@ public abstract class ScriptArgument {
     }
 
     public enum Type{
-        unknown, text, flag
+        unknown, text, flag, choice
     }
 
     public static class UnknownTypeArgument extends ScriptArgument{
@@ -43,6 +46,29 @@ public abstract class ScriptArgument {
         public FlagArgument(String id, Type type, String title, String about, boolean required, boolean value) {
             super(id, type, title, about, required);
             this.selected = value;
+        }
+    }
+
+    public static class ChoiceArgument extends ScriptArgument{
+
+        public final List<Choice> choiceList;
+
+        public ChoiceArgument(String id, Type type, String title, String about, boolean required,  List<Choice> choiceList) {
+            super(id, type, title, about, required);
+            this.choiceList = Collections.unmodifiableList(choiceList);
+        }
+
+        public static final class Choice{
+
+            public final String title;
+            public final String description;
+            public final String value;
+
+            public Choice(String title, String description, String value) {
+                this.title = title;
+                this.description = description;
+                this.value = value;
+            }
         }
     }
 }

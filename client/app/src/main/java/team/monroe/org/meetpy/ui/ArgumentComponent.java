@@ -8,9 +8,13 @@ import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.monroe.team.android.box.app.ui.GenericListViewAdapter;
+import org.monroe.team.android.box.app.ui.GetViewImplementation;
 
 import team.monroe.org.meetpy.R;
 import team.monroe.org.meetpy.uc.entities.ScriptArgument;
@@ -26,6 +30,8 @@ public abstract class ArgumentComponent<ArgumentType extends ScriptArgument> {
                 return new ArgumentComponent.Text((ScriptArgument.TextArgument) argument);
             case flag:
                 return new ArgumentComponent.Flag((ScriptArgument.FlagArgument) argument);
+            case choice:
+                return new Choice((ScriptArgument.ChoiceArgument) argument);
             case unknown:
                 return new ArgumentComponent.Unknown((ScriptArgument.UnknownTypeArgument) argument);
         }
@@ -140,6 +146,70 @@ public abstract class ArgumentComponent<ArgumentType extends ScriptArgument> {
             valueEdit.setEnabled(enabled);
         }
     }
+
+
+    public static class Choice extends ArgumentComponent<ScriptArgument.ChoiceArgument> {
+
+        private ScriptArgument.ChoiceArgument.Choice NOT_SELECTED;
+        Spinner choiceSpinner;
+        GenericListViewAdapter<ScriptArgument.ChoiceArgument.Choice,
+                GetViewImplementation.ViewHolder<ScriptArgument.ChoiceArgument.Choice>> adapter;
+
+        public Choice(ScriptArgument.ChoiceArgument scriptArgument) {
+            super(scriptArgument);
+        }
+
+        @Override
+        public int getLayoutId() {
+            return R.layout.component_type_choice;
+        }
+
+        @Override
+        public void onCreate(View view) {
+            NOT_SELECTED = new ScriptArgument.ChoiceArgument.Choice(arg.title,"Please make your choice",null);
+            view(view, R.id.component_description_text, TextView.class).setText(arg.about);
+            choiceSpinner = view(view,R.id.component_spinner, Spinner.class);
+            adapter = new GenericListViewAdapter<ScriptArgument.ChoiceArgument.Choice, GetViewImplementation.ViewHolder<ScriptArgument.ChoiceArgument.Choice>>(
+                    view.getContext(),
+                    new GetViewImplementation.ViewHolderFactory<GetViewImplementation.ViewHolder<ScriptArgument.ChoiceArgument.Choice>>() {
+                        @Override
+                        public GetViewImplementation.ViewHolder<ScriptArgument.ChoiceArgument.Choice> create(final View convertView) {
+                            return new GetViewImplementation.ViewHolder<ScriptArgument.ChoiceArgument.Choice>() {
+
+                                TextView title = (TextView) convertView.findViewById(R.id.item_title);
+                                TextView description = (TextView) convertView.findViewById(R.id.item_description);
+
+                                @Override
+                                public void update(ScriptArgument.ChoiceArgument.Choice choice, int position) {
+                                        title.setText(choice.title);
+                                        description.setText(choice.description);
+                                }
+                                @Override
+                                public void cleanup() {}
+                            };
+                        }
+                    },
+                    R.layout.item_choice
+            );
+            adapter.add(NOT_SELECTED);
+            adapter.addAll(arg.choiceList);
+            choiceSpinner.setAdapter(adapter);
+        }
+
+        @Override
+        public Object getValue() throws ValueNotSetException {
+            ScriptArgument.ChoiceArgument.Choice choice = (ScriptArgument.ChoiceArgument.Choice) choiceSpinner.getSelectedItem();
+            if (arg.required && choice == NOT_SELECTED)
+                throw generateValueNotSetException();
+            return choice.value;
+        }
+
+        @Override
+        public void userInput(boolean enabled) {
+            choiceSpinner.setEnabled(enabled);
+        }
+    }
+
 
     public static class Unknown extends ArgumentComponent<ScriptArgument.UnknownTypeArgument> {
 
