@@ -3,8 +3,9 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar">
         <!--In order to debug which field get no style -->
-        <item name="android:textColor">#ffff3c2f</item>
+        <item name="android:textColor">#ff373737</item>
     </style>
+
 
     <style name="AppTheme.Transperent.NoAnimation" parent="AppTheme">
         <item name="android:inAnimation">@null</item>
