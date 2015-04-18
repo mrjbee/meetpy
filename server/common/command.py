@@ -44,6 +44,15 @@ class TextArgumentDefinition(_ArgumentDefinition):
         def_map["example"] = self._example
 
 
+class FlagArgumentDefinition(_ArgumentDefinition):
+    def __init__(self, arg_id, arg_title, arg_about, arg_selected):
+        super(FlagArgumentDefinition, self).__init__("flag", True, arg_id, arg_title, arg_about)
+        self._selected = arg_selected
+
+    def define_map(self, def_map):
+        def_map["selected"] = self._selected
+
+
 class SignatureBuilder(object):
     def __init__(self):
         super(SignatureBuilder, self).__init__()
@@ -87,6 +96,9 @@ class ArgumentBuilder(object):
         self._arg_lst.append(arg_definition)
         return arg_definition
 
+    def arg_flag(self, id, title, about, selected = False):
+        arg_definition = FlagArgumentDefinition(id, title, about, selected)
+        self._arg_lst.append(arg_definition)
 
 
 class _Result(object):
