@@ -6,9 +6,11 @@ import android.text.Spanned;
 import android.text.SpannedString;
 import android.text.style.StyleSpan;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import team.monroe.org.meetpy.R;
 import team.monroe.org.meetpy.uc.entities.ScriptArgument;
@@ -154,6 +156,12 @@ public abstract class ArgumentComponent<ArgumentType extends ScriptArgument> {
         public void onCreate(View view) {
             view(view, R.id.component_title_text, TextView.class).setText(arg.title);
             view(view, R.id.component_description_text, TextView.class).setText(arg.about);
+            view(view, R.id.component_warn_text, Button.class).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(),"Sorry the argument has unsupported type",Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         @Override

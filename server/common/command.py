@@ -53,6 +53,27 @@ class FlagArgumentDefinition(_ArgumentDefinition):
         def_map["selected"] = self._selected
 
 
+class ChoiceArgumentDefinition(_ArgumentDefinition):
+
+    def __init__(self, arg_req, arg_id, arg_title, arg_about, builder):
+        super(ChoiceArgumentDefinition, self).__init__("choice", arg_req, arg_id, arg_title, arg_about)
+        self._choices = []
+        self._builder = builder
+
+    def define_map(self, def_map):
+        def_map["choices"] = self._choices
+
+    def choice(self, title, description, value):
+        self._choices.append({
+            "title": str(title),
+            "description": str(description),
+            "value": str(value),
+            })
+
+    def end(self):
+        return self._builder
+
+
 class SignatureBuilder(object):
     def __init__(self):
         super(SignatureBuilder, self).__init__()
@@ -100,6 +121,11 @@ class ArgumentBuilder(object):
         arg_definition = FlagArgumentDefinition(id, title, about, selected)
         self._arg_lst.append(arg_definition)
         return self
+
+    def arg_choices(self, required, id, title, about):
+        arg_definition = ChoiceArgumentDefinition(required, id, title, about, self)
+        self._arg_lst.append(arg_definition)
+        return arg_definition
 
 
 class _Result(object):
