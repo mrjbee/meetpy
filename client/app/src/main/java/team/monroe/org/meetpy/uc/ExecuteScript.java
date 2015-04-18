@@ -1,5 +1,7 @@
 package team.monroe.org.meetpy.uc;
 
+import android.util.Pair;
+
 import org.monroe.team.android.box.json.Json;
 import org.monroe.team.android.box.json.JsonBuilder;
 import org.monroe.team.android.box.services.HttpManager;
@@ -65,6 +67,12 @@ public class ExecuteScript extends UserCaseSupport<ExecuteScript.ExecutionReques
                                 resultObject.asString("title"),
                                 resultObject.asString("value")));
                         break;
+                    case message_list:
+                        resultList.add(new ScriptAnswer.MessageList(
+                                resultObject.asString("title"),
+                                valueList(resultObject.asArray("value"))
+                        ));
+                        break;
                     default:
                         throw new IllegalArgumentException("Unsupported type = "+typeString);
                 }
@@ -79,6 +87,16 @@ public class ExecuteScript extends UserCaseSupport<ExecuteScript.ExecutionReques
             }
         }
         return new ScriptAnswer(success, resultList, taskIdentifierList);
+    }
+
+    private List<Pair<String, String>> valueList(Json.JsonArray valueArray) {
+        List<Pair<String,String>> answer = new ArrayList<>();
+        for (int position = 0; valueArray.exists(position);position++){
+            answer.add(new Pair<String, String>(
+                    valueArray.asObject(position).value("value",""),
+                    valueArray.asObject(position).value("sub_value","")));
+        }
+        return answer;
     }
 
     public static class ExecutionRequest{

@@ -28,6 +28,10 @@ public class AnswerFormComponent {
             switch (result.type){
                 case message:
                     componentList.add(new ResultComponent.Message((ScriptAnswer.Message) result));
+                    break;
+                case message_list:
+                    componentList.add(new ResultComponent.MessageList((ScriptAnswer.MessageList) result));
+                    break;
             }
         }
 
@@ -43,8 +47,7 @@ public class AnswerFormComponent {
 
         childContainerView = (ViewGroup) rootView.findViewById(R.id.form_child_content_panel);
         for (ResultComponent subComponent : componentList) {
-            int layoutId = subComponent.getLayoutId();
-            View subComponentView = inflater.inflate(layoutId, childContainerView, false);
+            View subComponentView = subComponent.inflate(inflater, childContainerView);
             subComponent.onCreate(subComponentView);
             childContainerView.addView(subComponentView);
         }

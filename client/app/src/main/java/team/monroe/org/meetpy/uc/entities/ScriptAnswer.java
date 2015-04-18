@@ -1,5 +1,7 @@
 package team.monroe.org.meetpy.uc.entities;
 
+import android.util.Pair;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class ScriptAnswer {
         }
 
         public static enum Type{
-            unknown, message
+            unknown, message, message_list
         }
     }
 
@@ -40,4 +42,15 @@ public class ScriptAnswer {
         }
     }
 
+    public static class MessageList extends Result {
+
+        public final String title;
+        public final List<Pair<String, String>> valueList;
+
+        public MessageList(String title, List<Pair<String,String>> values) {
+            super(Type.message_list);
+            this.title = title;
+            this.valueList = values;
+        }
+    }
 }
