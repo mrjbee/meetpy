@@ -17,7 +17,7 @@ public abstract class ScriptArgument {
     }
 
     public enum Type{
-        unknown, text
+        unknown, text, flag
     }
 
     public static class UnknownTypeArgument extends ScriptArgument{
@@ -33,6 +33,16 @@ public abstract class ScriptArgument {
         public TextArgument(String id, Type type, String title, String about, boolean required, String example) {
             super(id, type, title, about, required);
             this.example = example;
+        }
+    }
+
+    public static class FlagArgument extends ScriptArgument{
+
+        public final boolean selected;
+
+        public FlagArgument(String id, Type type, String title, String about, boolean required, boolean value) {
+            super(id, type, title, about, required);
+            this.selected = value;
         }
     }
 }

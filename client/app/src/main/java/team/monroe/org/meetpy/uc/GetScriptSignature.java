@@ -71,6 +71,11 @@ public class GetScriptSignature extends UserCaseSupport<ScriptIdentifier,GetScri
                         argId,argType,argTitle,argAbout,argRequired,
                         argumentJson.asString("example")
                 );
+            case flag:
+                return new ScriptArgument.FlagArgument(
+                        argId,argType,argTitle,argAbout,argRequired,
+                        argumentJson.value("selected", Boolean.TRUE)
+                );
             default:
                 return new ScriptArgument.UnknownTypeArgument(
                         argId,argType,argTitle,argAbout,argRequired

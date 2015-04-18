@@ -7,6 +7,7 @@ import android.text.SpannedString;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import team.monroe.org.meetpy.R;
@@ -15,6 +16,19 @@ import team.monroe.org.meetpy.uc.entities.ScriptArgument;
 public abstract class ArgumentComponent<ArgumentType extends ScriptArgument> {
 
     protected final ArgumentType arg;
+
+
+    public static ArgumentComponent buildFor(ScriptArgument argument) {
+        switch (argument.type){
+            case text:
+                return new ArgumentComponent.Text((ScriptArgument.TextArgument) argument);
+            case flag:
+                return new ArgumentComponent.Flag((ScriptArgument.FlagArgument) argument);
+            case unknown:
+                return new ArgumentComponent.Unknown((ScriptArgument.UnknownTypeArgument) argument);
+        }
+        throw new IllegalArgumentException("Unsupported type = "+argument.type.name());
+    }
 
     public ArgumentComponent(ArgumentType scriptArgument) {
         this.arg = scriptArgument;
@@ -41,6 +55,39 @@ public abstract class ArgumentComponent<ArgumentType extends ScriptArgument> {
 
     public abstract void userInput(boolean enabled);
 
+
+    public static class Flag extends ArgumentComponent<ScriptArgument.FlagArgument> {
+
+        Switch switchView;
+
+        public Flag(ScriptArgument.FlagArgument scriptArgument) {
+            super(scriptArgument);
+        }
+
+
+        @Override
+        public int getLayoutId() {
+            return R.layout.component_type_flag;
+        }
+
+        @Override
+        public void onCreate(View view) {
+            switchView = view(view, R.id.component_switch, Switch.class);
+            switchView.setText(arg.title);
+            switchView.setChecked(arg.selected);
+            view(view, R.id.component_description_text, TextView.class).setText(arg.about);
+        }
+
+        @Override
+        public Object getValue() throws ValueNotSetException {
+            return switchView.isChecked();
+        }
+
+        @Override
+        public void userInput(boolean enabled) {
+            switchView.setEnabled(enabled);
+        }
+    }
 
     public static class Text extends ArgumentComponent<ScriptArgument.TextArgument> {
 

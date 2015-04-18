@@ -88,17 +88,18 @@ class ArgumentBuilder(object):
     def text_arg(self, required, name, about):
         arg_definition = TextArgumentDefinition(required, name, name, about)
         self._arg_lst.append(arg_definition)
-        return arg_definition
+        return self
 
     def arg_text(self, required, name, title, about, example=None):
         arg_definition = TextArgumentDefinition(required, name, title, about)
         arg_definition.example(example)
         self._arg_lst.append(arg_definition)
-        return arg_definition
+        return self
 
-    def arg_flag(self, id, title, about, selected = False):
+    def arg_flag(self, id, title, about, selected=False):
         arg_definition = FlagArgumentDefinition(id, title, about, selected)
         self._arg_lst.append(arg_definition)
+        return self
 
 
 class _Result(object):

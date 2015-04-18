@@ -49,7 +49,7 @@ public class ArgumentFormComponent {
     public static ArgumentFormComponent createFor(GetScriptSignature.ScriptSignature signature){
         ArgumentFormComponent argumentFormComponent = new ArgumentFormComponent(signature.actionName);
         for (ScriptArgument argument : signature.arguments) {
-            ArgumentComponent formView = ArgumentViewBuilder.buildFor(argument);
+            ArgumentComponent formView = ArgumentComponent.buildFor(argument);
             argumentFormComponent.argumentComponentList.add(formView);
         }
         return argumentFormComponent;

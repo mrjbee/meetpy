@@ -6,15 +6,13 @@
     android:layout_marginBottom="15dp"
     >
 
-    <EditText
+    <Switch
         style="@style/Text.Panel.Main"
-        android:id="@+id/component_value_edit"
+        android:paddingLeft="10dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="Argument name"
-        android:singleLine="true"
-        android:maxLines="1"/>
-
+        android:text="Text switch"
+        android:id="@+id/component_switch" />
 
     <TextView
         android:layout_marginLeft="30dp"
@@ -22,10 +20,11 @@
         android:id="@+id/component_description_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Baslad asdasdopkj qweqwe;lk sdfsdfkl; werwe ruhisdf OSds kojsdfosdfj"
+        android:text="Details"
         android:scrollHorizontally="false"
         android:singleLine="false"
         android:ellipsize="end"/>
+
 
 
 </LinearLayout>
