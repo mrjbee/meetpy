@@ -115,6 +115,21 @@ class MessageResult(_Result):
         result_map["value"] = self._value
 
 
+class MessageListResult(_Result):
+
+    def __init__(self, title):
+        super(MessageListResult, self).__init__("message_list")
+        self._value = []
+        self._title = title
+
+    def fill_result(self, result_map):
+        result_map["title"] = self._title
+        result_map["value"] = self._value
+
+    def add(self, value, sub_value=None):
+        self._value.append({"value": value, "sub_value": sub_value})
+
+
 class StopExecutionError(RuntimeError):
     def __init__(self, msg):
         super(StopExecutionError, self).__init__(msg)
@@ -131,6 +146,11 @@ class ExecutionContext(object):
 
     def message(self, title, msg):
         self._result(MessageResult(title, msg))
+
+    def message_list(self, title):
+        list = MessageListResult(title)
+        self._result(list)
+        return list
 
     def stop(self, description):
         raise StopExecutionError(description)
