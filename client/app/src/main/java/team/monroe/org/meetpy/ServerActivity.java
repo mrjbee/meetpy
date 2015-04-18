@@ -73,12 +73,12 @@ public class ServerActivity extends ActivitySupport<AppMeetPy> {
 
         myServer = getFromIntent("server",null);
         PointF position = getFromIntent("position" , null);
-        View baseContainer= view(R.id.smoke_view);
+        View smokeView= view(R.id.smoke_view);
 
         contentAC = combine(animateAppearance(view(R.id.real_content), xSlide(0f, DisplayUtils.screenWidth(getResources())))
                         .showAnimation(duration_constant(500), interpreter_accelerate_decelerate())
                         .hideAnimation(duration_constant(300), interpreter_decelerate(0.8f)),
-                animateAppearance(baseContainer, alpha(1f,0.2f))
+                animateAppearance(smokeView, alpha(1f,0.2f))
                         .showAnimation(duration_constant(300), interpreter_accelerate(0.8f))
                         .hideAnimation(duration_constant(500), interpreter_decelerate(0.8f))
         );

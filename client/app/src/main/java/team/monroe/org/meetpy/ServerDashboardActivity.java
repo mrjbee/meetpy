@@ -20,6 +20,7 @@ import org.monroe.team.android.box.app.ui.GenericListViewAdapter;
 import org.monroe.team.android.box.app.ui.GetViewImplementation;
 import org.monroe.team.android.box.app.ui.PushToActionAdapter;
 import org.monroe.team.android.box.app.ui.PushToListView;
+import org.monroe.team.android.box.app.ui.SlideTouchGesture;
 import org.monroe.team.android.box.app.ui.animation.AnimatorListenerSupport;
 import org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceController;
 import static org.monroe.team.android.box.app.ui.animation.apperrance.AppearanceControllerBuilder.*;
@@ -37,6 +38,7 @@ import java.util.TimerTask;
 import team.monroe.org.meetpy.uc.entities.TaskIdentifier;
 import team.monroe.org.meetpy.ui.MyListView;
 import team.monroe.org.meetpy.ui.PanelUtils;
+import team.monroe.org.meetpy.ui.RelativeLayoutHack1;
 
 
 public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
@@ -45,12 +47,67 @@ public class ServerDashboardActivity extends ActivitySupport<AppMeetPy> {
     private AppearanceController bodyAC;
     private AppearanceController subBodyAC;
     private AppearanceController addBtnAC;
+    private AppearanceController contentAC;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_dashboard);
         PanelUtils.pageHeader(view(R.id.header),"MeetPY","remote runner");
+
+
+        contentAC = animateAppearance(view(R.id.real_content), xSlide(0f, DisplayUtils.screenWidth(getResources())))
+                        .showAnimation(duration_constant(500), interpreter_accelerate_decelerate())
+                        .hideAnimation(duration_constant(300), interpreter_decelerate(0.8f))
+                    .build();
+
+        RelativeLayoutHack1 shadow_dog_nail_view = view(R.id.real_content,RelativeLayoutHack1.class);
+        shadow_dog_nail_view.hackListener = new RelativeLayoutHack1.TranslationListener() {
+            @Override
+            public void onX(float value) {
+                if (value < DisplayUtils.dpToPx(4,getResources())){
+                    view(R.id.shadow_view).setVisibility(View.GONE);
+                }else{
+                    view(R.id.shadow_view).setVisibility(View.VISIBLE);
+                }
+            }
+        };
+
+
+        final float maxSlideValue = DisplayUtils.screenWidth(getResources());
+        view(R.id.slide_back_stub).setOnTouchListener(new SlideTouchGesture(maxSlideValue, SlideTouchGesture.Axis.X_RIGHT) {
+
+            @Override
+            protected float applyFraction() {
+                return 0.6f;
+            }
+
+            @Override
+            protected void onProgress(float x, float y, float slideValue, float fraction) {
+                view(R.id.real_content).setTranslationX(maxSlideValue * fraction);
+            }
+
+            @Override
+            protected void onCancel(float x, float y, float slideValue, float fraction) {
+                contentAC.show();
+            }
+
+            @Override
+            protected void onApply(float x, float y, float slideValue, float fraction) {
+                contentAC.hideAndCustomize(new AppearanceController.AnimatorCustomization() {
+                    @Override
+                    public void customize(Animator animator) {
+                        animator.addListener(new AnimatorListenerSupport(){
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                ServerDashboardActivity.this.finish();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
         serverListAdapter =
                 new GenericListViewAdapter<Representations.Server, GetViewImplementation.ViewHolder<Representations.Server>>(
                         this,
