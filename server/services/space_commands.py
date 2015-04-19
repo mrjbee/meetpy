@@ -31,14 +31,17 @@ class CommandManger (Service):
         assert isinstance(command, CommandMethods)
         answer = CommandExecutionResult()
         try:
-            context = common.command.CommandExecutionContext()
+
+            context = common.command.CommandExecutionContext(self.sm.context_env())
+
             command.method_execute(context, arguments, log_execution())
             log.info("Command executed: %s", command_id)
             answer.is_success = True
             answer.results = context.result_as_map()
             # Deals with tasks
             for task in context._tasks:
-                answer.sub_execution_list.append(CommandTaskExecution(common.command.TaskExecutionContext(), task))
+                answer.sub_execution_list.append(
+                    CommandTaskExecution(common.command.TaskExecutionContext(self.sm.context_env()), task))
 
         except Exception as error:
             log_execution().exception("Command execution failed: %s", command_id)

@@ -177,9 +177,16 @@ class StopExecutionError(RuntimeError):
 
 class ExecutionContext(object):
 
-    def __init__(self):
+    def __init__(self, env_map):
         super(ExecutionContext, self).__init__()
         self._result_list = []
+        self._env_map = env_map
+
+    def property(self, key, default="__not_set__"):
+        answer = self._env_map.get(key, default)
+        if answer is "__not_set__":
+            raise StopExecutionError("Env property not set = "+key)
+        return answer
 
     def _result(self, result):
         self._result_list.append(result)
@@ -201,8 +208,8 @@ class ExecutionContext(object):
 
 class CommandExecutionContext(ExecutionContext):
 
-    def __init__(self):
-        super(CommandExecutionContext, self).__init__()
+    def __init__(self, env_map):
+        super(CommandExecutionContext, self).__init__(env_map)
         self._arg_builder = None
         self._tasks = []
 
@@ -217,8 +224,8 @@ class CommandExecutionContext(ExecutionContext):
 
 class TaskExecutionContext(ExecutionContext):
 
-    def __init__(self):
-        super(TaskExecutionContext, self).__init__()
+    def __init__(self, env_map):
+        super(TaskExecutionContext, self).__init__(env_map)
         self._progress = 0.0
         self._observe_method = None
 

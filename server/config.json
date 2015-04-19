@@ -8,5 +8,6 @@
   "log_console_enabled": true,
   "command_dir":"commands",
   "task_dir":".tasks",
-  "places":[]
+  "places":[],
+  "context":{}
 }

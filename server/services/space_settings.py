@@ -61,3 +61,7 @@ class SettingManager(Service):
     def command_dir(self):
         path = self._model["command_dir"]
         return path
+
+    def context_env(self):
+        answer = self._model["context"]
+        return answer
