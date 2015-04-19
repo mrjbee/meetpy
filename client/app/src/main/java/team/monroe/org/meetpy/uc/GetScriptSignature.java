@@ -94,7 +94,7 @@ public class GetScriptSignature extends UserCaseSupport<ScriptIdentifier,GetScri
             answer.add(new ScriptArgument.ChoiceArgument.Choice(
                     choices.asObject(i).value("title",""),
                     choices.asObject(i).value("description",""),
-                    choices.asObject(i).value("title","value")
+                    choices.asObject(i).value("value","")
             ));
         }
         return answer;

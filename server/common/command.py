@@ -69,6 +69,7 @@ class ChoiceArgumentDefinition(_ArgumentDefinition):
             "description": str(description),
             "value": str(value),
             })
+        return self
 
     def end(self):
         return self._builder
