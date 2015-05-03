@@ -65,9 +65,9 @@ class ChoiceArgumentDefinition(_ArgumentDefinition):
 
     def choice(self, title, description, value):
         self._choices.append({
-            "title": str(title),
-            "description": str(description),
-            "value": str(value),
+            "title": title,
+            "description": description,
+            "value": value,
             })
         return self
 
