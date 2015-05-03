@@ -6,3 +6,4 @@
 .tasks/
 *.vpp~*
 /commands_user
+*/__pycache__
