@@ -7,9 +7,9 @@ from services import space_threads
 import space_settings
 
 
-def _build_command_definition(command):
+def _build_command_definition(command, sm):
     assert isinstance(command, CommandMethods)
-    builder = common.command.SignatureBuilder()
+    builder = common.command.SignatureBuilder(sm.context_env())
     command.method_define(builder)
     return builder
 
@@ -57,7 +57,7 @@ class CommandManger (Service):
         command = self._command_map.get(command_name)
         if command is None:
             return None
-        definition = _build_command_definition(command)
+        definition = _build_command_definition(command, self.sm)
         return {"id": command_name,
                 "title": definition._title,
                 "about": definition._about,
@@ -67,7 +67,7 @@ class CommandManger (Service):
     def commands(self):
         answer = []
         for key, value in self._command_map.items():
-            definition = _build_command_definition(value)
+            definition = _build_command_definition(value, self.sm)
             answer.append({"id": key, "title": definition._title, "about": definition._about})
         return answer
 

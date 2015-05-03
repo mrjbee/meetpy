@@ -76,12 +76,19 @@ class ChoiceArgumentDefinition(_ArgumentDefinition):
 
 
 class SignatureBuilder(object):
-    def __init__(self):
+    def __init__(self, env_map):
         super(SignatureBuilder, self).__init__()
         self._title = "Unknown"
         self._about = "Unknown"
         self._action_name = None
         self._argument_builder = ArgumentBuilder()
+        self._env_map = env_map
+
+    def property(self, key, default="__not_set__"):
+        answer = self._env_map.get(key, default)
+        if answer is "__not_set__":
+            raise StopExecutionError("Env property not set = "+key)
+        return answer
 
     def title(self, value_string):
         self._title = value_string
