@@ -20,7 +20,7 @@ class SettingManager(Service):
         config_file.close()
         if self._model:
             user_model = self._model
-            for key, value in default_model.items():
+            for key, value in list(default_model.items()):
                 if not(key in user_model):
                     user_model[key] = value
         else:

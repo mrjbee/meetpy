@@ -7,7 +7,7 @@ class Context(object):
 
     def load(self):
         self.configure()
-        for kev, value in self._serviceMap.items():
+        for kev, value in list(self._serviceMap.items()):
             value.init()
 
     def configure(self):

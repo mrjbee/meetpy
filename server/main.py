@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from BaseHTTPServer import HTTPServer
+from http.server import HTTPServer
 from common import beerest
 from common.utils import log_server, log_execution
 import logging
@@ -20,11 +20,11 @@ if CONSOLE_LOG_ENABLED is False:
     CONSOLE_LOG_LEVEL = None
 
 # Welcome prompt
-print "MeetPy server. Version", VERSION
-print " == server log path:", SERVER_LOG_PATH
-print " == execution log path:", EXECUTION_LOG_PATH
-print " == console log level:", CONSOLE_LOG_LEVEL
-print " == starting on a port:", PORT_NUMBER
+print("MeetPy server. Version", VERSION)
+print(" == server log path:", SERVER_LOG_PATH)
+print(" == execution log path:", EXECUTION_LOG_PATH)
+print(" == console log level:", CONSOLE_LOG_LEVEL)
+print(" == starting on a port:", PORT_NUMBER)
 
 
 # Logging setup

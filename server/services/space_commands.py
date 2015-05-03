@@ -4,7 +4,7 @@ from common.context import Service
 from common.utils import log_execution
 import common.command
 from services import space_threads
-import space_settings
+from services import space_settings
 
 
 def _build_command_definition(command, sm):
@@ -66,7 +66,7 @@ class CommandManger (Service):
 
     def commands(self):
         answer = []
-        for key, value in self._command_map.items():
+        for key, value in list(self._command_map.items()):
             definition = _build_command_definition(value, self.sm)
             answer.append({"id": key, "title": definition._title, "about": definition._about})
         return answer

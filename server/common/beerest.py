@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import re, json, traceback
 from common.utils import log_server
-from BaseHTTPServer import BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler
 
 handlers = []
 INVALID = ()
@@ -31,9 +31,9 @@ class RestServlet(BaseHTTPRequestHandler):
                     # TODO! process headers
                     self.send_header('Content-type', handler_response.get_content_type())
                     self.end_headers()
-                    self.wfile.write(handler_response.get_content())
+                    self.wfile.write(handler_response.get_content_as_bytes())
         except BaseException:
-            log_server().exception("Exception during processing: "+self.raw_requestline)
+            log_server().exception("Exception during processing: "+str(self.raw_requestline))
             self.send_response(500)
         return
 
@@ -45,7 +45,7 @@ class RestServlet(BaseHTTPRequestHandler):
                 log_server().info("Respond: invalid request [no body]")
                 self._send_bad_request()
                 return
-            body = self.rfile.read(body_size)
+            body = (self.rfile.read(body_size)).decode("UTF-8")
             log_server().info("Request body: %s", body)
             global INVALID
             handler = self._select_handler(self.path)
@@ -66,9 +66,9 @@ class RestServlet(BaseHTTPRequestHandler):
                     # TODO! process headers
                     self.send_header('Content-type', handler_response.get_content_type())
                     self.end_headers()
-                    self.wfile.write(handler_response.get_content())
+                    self.wfile.write(handler_response.get_content_as_bytes())
         except BaseException:
-            log_server().exception("Exception during processing: "+self.raw_requestline)
+            log_server().exception("Exception during processing: "+str(self.raw_requestline))
             self.send_response(500)
         return
 
@@ -129,9 +129,9 @@ class HandlerResponse(object):
         self._content_type = "application/json"
         self._content_plain = json.dumps(json_obj, sort_keys=True, indent=4, separators=(',', ': '))
 
-    def get_content(self):
+    def get_content_as_bytes(self):
         if self._isString:
-            return self._content_plain
+            return bytes(self._content_plain, "UTF-8")
         # TODO: throw exception
         return None
 
