@@ -1,0 +1,86 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="@style/Page.Background"
+    android:orientation="vertical"
+    tools:context="team.monroe.org.meetpy.ServerDashboardActivity">
+
+    <include android:id="@+id/header"
+        layout="@layout/panel_header"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/sd_hidden_space"
+        android:layout_width="fill_parent"
+        android:layout_height="0px">
+
+        <LinearLayout
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/sd_sub_body"
+        android:layout_below="@+id/header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:paddingTop="10dp"
+        >
+
+        <TextView
+            style="@style/Text.Background.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Server Configuration"
+            android:layout_marginBottom="10dp"/>
+
+        <EditText
+            style="@style/Text.Panel.Main"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sc_alias_value"
+            android:hint="Server name"
+            android:singleLine="true"
+            android:maxLines="1"/>
+
+        <EditText
+            style="@style/Text.Panel.Main"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sc_url_value"
+            android:hint="Server url, example http://192.168.0.6:7787"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:maxLines="1"
+            />
+
+        <Button
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/sd_add_btn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/add_button"/>
+
+    </LinearLayout>
+    </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/body"
+        android:layout_below="@+id/header"
+        style="@style/Page.Body"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <team.monroe.org.meetpy.ui.MyListView
+            android:id="@+id/main_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            />
+
+    </RelativeLayout>
+
+
+</LinearLayout>
+<!-- From: file:/home/mrjbee/Repos/meetpy/client/app/src/main/res/layout/activity_servers.xml -->

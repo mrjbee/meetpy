@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    >
+
+    <TextView
+        style="@style/Text.Panel.Main"
+        android:id="@+id/component_title_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Caption"
+    />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/component_list_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/component_more_button"
+        android:layout_gravity="right"
+        style="@style/Button.Link.Small.Main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="more..."/>
+</LinearLayout><!-- From: file:/home/mrjbee/Repos/meetpy/client/app/src/main/res/layout/component_result_type_list.xml -->

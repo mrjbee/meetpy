@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+
+    <ImageView
+        android:layout_marginTop="5dp"
+        android:id="@+id/item_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/comp_offline"/>
+
+
+    <TextView
+        android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Text.Item.Light"
+        android:text="Server Alias"
+        android:id="@+id/item_title"
+        android:layout_toRightOf="@+id/item_icon"
+        />
+    <TextView
+            android:layout_alignLeft="@+id/item_title"
+            android:layout_below="@+id/item_title"
+            android:id="@+id/item_task_button"
+            style="@style/Text.Item.Light.Optional"
+            android:textStyle="normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20 Task(s)"/>
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Text.Item.Light.Optional"
+        android:text="Server details"
+        android:id="@+id/item_description"
+        android:layout_alignLeft="@+id/item_title"
+        android:layout_below="@+id/item_task_button"
+        />
+
+
+    </RelativeLayout>
+
+
+</LinearLayout><!-- From: file:/home/mrjbee/Repos/meetpy/client/app/src/main/res/layout/item_server.xml -->

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/home/mrjbee/Repos/meetpy/client/app/src/main/res/values-v21/styles.xml -->
+    <eat-comment/>
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:textColor">#ff373737</item>
+        <item name="android:statusBarColor">#ff777777</item>
+    </style>
+</resources>
