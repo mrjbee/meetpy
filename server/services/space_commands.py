@@ -47,7 +47,7 @@ class CommandManger (Service):
             log_execution().exception("Command execution failed: %s", command_id)
             log_execution().exception(error)
             answer.is_success = False
-            answer.error_msg = error.message
+            answer.error_msg = error.args[0]
             error_trace = traceback.format_exc()
             answer.error_trace = error_trace
 
@@ -141,10 +141,10 @@ class CommandTaskExecution(space_threads.ThreadRunnable):
             self._context.progress(1)
         except Exception as error:
             self._status = "error"
-            self._log().debug("Scheduled task executed with error = "+self._task.id+" msg = "+error.message)
+            self._log().debug("Scheduled task executed with error = "+self._task.id+" msg = "+error.args[0])
             self._log().exception(error)
             error_trace = traceback.format_exc()
-            self._error_msg = error.message
+            self._error_msg = error.args[0]
             self._error_trace = error_trace
 
         self.persist()
