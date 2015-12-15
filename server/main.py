@@ -5,6 +5,8 @@ from common.utils import log_server, log_execution
 import logging
 import transport_config
 from context_config import SM
+import ssl
+import sys
 
 VERSION = "0.1 (beta)"
 
@@ -15,6 +17,9 @@ EXECUTION_LOG_PATH = SM.setting("log_execution_path")
 EXECUTION_LOG_LEVEL = SM.log_level("log_execution_level")
 CONSOLE_LOG_LEVEL = SM.log_level("log_console_level")
 CONSOLE_LOG_ENABLED = SM.setting("log_console_enabled")
+
+SSL_ENABLED = SM.setting("ssl_enabled")
+SSL_PEM_PATH = SM.setting("ssl_pem_path")
 
 if CONSOLE_LOG_ENABLED is False:
     CONSOLE_LOG_LEVEL = None
@@ -30,10 +35,9 @@ print(" == starting on a port:", PORT_NUMBER)
 # Logging setup
 fmt = logging.Formatter('%(levelname)s:%(message)s')
 file_fmt = logging.Formatter('[%(threadName)s] %(asctime)s - %(levelname)s:%(message)s')
-console_handler = logging.StreamHandler()
+console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(fmt)
-if CONSOLE_LOG_LEVEL:
-    console_handler.setLevel(CONSOLE_LOG_LEVEL)
+console_handler.setLevel(CONSOLE_LOG_LEVEL)
 
 file_handler_execution = logging.FileHandler(EXECUTION_LOG_PATH)
 file_handler_execution.setFormatter(file_fmt)
@@ -66,6 +70,9 @@ beerest.handlers = [
 server = HTTPServer(('', PORT_NUMBER), beerest.RestServlet)
 try:
     log_server().info("Server started at port: "+str(PORT_NUMBER))
+    if SSL_ENABLED:
+        log_server().info("Server SSL enabled certificate = "+str(SSL_PEM_PATH))
+        server.socket = ssl.wrap_socket(server.socket, certfile=str(SSL_PEM_PATH))
     # Wait forever for incoming http requests
     server.serve_forever()
 except KeyboardInterrupt or SystemExit:

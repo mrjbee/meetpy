@@ -1,5 +1,7 @@
 {
   "port":9999,
+  "ssl_enabled":false,
+  "ssl_pem_path":"",
   "log_server_path":"server.log",
   "log_execution_path":"execution.log",
   "log_server_level":"INFO",
